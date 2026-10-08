@@ -63,7 +63,7 @@
             --color-dark-3: #111111;
             --color-surface: #f5f5f5;
             --color-surface-2: #e8e8e8;
-            --color-border: #dadada;
+            --color-border: #eaeaea;
             --color-muted: #b1b1b1;
             --color-text-body: #575757;
             --color-text-heading: #000000;
@@ -233,14 +233,24 @@
             padding: 0rem var(--space-6);
             padding-top: clamp(5rem, 10vw, 7rem);
             padding-bottom: clamp(5rem, 10vw, 7rem);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-20);
         }
 
         .section-header-content {
-            text-align: center;
-            margin-bottom: var(--space-20);
             display: flex;
             flex-direction: column;
             align-items: center;
+            text-align: center;
+            gap: var(--space-6)
+        }
+
+        .section-header-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
             gap: var(--space-6)
         }
 
@@ -383,6 +393,16 @@
             background-color: var(--color-surface);
         }
 
+        .btn-dark {
+            background-color: var(--color-dark-3);
+            color: var(--color-white);
+            border: none;
+        }
+
+        .btn-dark:hover {
+            opacity: 0.9;
+        }
+
         .btn-outline {
             background-color: transparent;
             color: var(--color-text-heading);
@@ -435,7 +455,6 @@
         }
 
         /* ─── Glass Effect ──────────────────────────────── */
-
         .glass-effect {
             background-color: rgba(255, 255, 255, 0.5) !important;
             backdrop-filter: blur(16px);
@@ -487,6 +506,108 @@
         .header-actions {
             position: relative;
             z-index: 2;
+        }
+
+        /* ─── Mobile Menu Overlay ─────────────────────── */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--color-white);
+            cursor: pointer;
+            padding: 8px;
+            transition: color var(--transition-base);
+            z-index: 1000;
+        }
+
+        .site-header.scrolled .mobile-menu-toggle {
+            color: var(--color-text-heading);
+        }
+
+        .mobile-menu-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: var(--color-brand-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            padding-left: 10vw;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-menu-close {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: none;
+            border: none;
+            color: var(--color-white);
+            cursor: pointer;
+            padding: 8px;
+            transition: transform var(--transition-fast);
+        }
+
+        .mobile-menu-close:hover {
+            transform: scale(1.1);
+        }
+
+        .mobile-nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 28px;
+        }
+
+        .mobile-nav-list li {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .mobile-menu-overlay.active .mobile-nav-list li {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: var(--anim-delay);
+        }
+
+        .mobile-nav-link {
+            font-size: 28px;
+            font-weight: var(--font-weight-medium);
+            color: var(--color-white);
+            text-decoration: none;
+            transition: opacity var(--transition-base);
+        }
+
+        .mobile-nav-link:hover {
+            opacity: 0.8;
+        }
+
+        .mobile-nav-btn {
+            background-color: var(--color-white);
+            color: var(--color-text-heading);
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: var(--font-weight-medium);
+            text-decoration: none;
+            display: inline-block;
+            transition: transform var(--transition-fast);
+        }
+
+        .mobile-nav-btn:hover {
+            transform: scale(1.05);
         }
 
         /* SCROLLED PILL STATE */
@@ -764,9 +885,7 @@
             }
         }
 
-        /* ═══════════════════════════════════════════════════
-           3. ABOUT & STATS SECTION
-        ═══════════════════════════════════════════════════ */
+        /* ─── Section: About & Clients ──────────────────── */
         .about-stats-section {
             position: relative;
             z-index: 10;
@@ -783,7 +902,6 @@
         .about-container {
             display: grid;
             grid-template-columns: 1.2fr 0.5fr;
-            gap: 5rem;
         }
 
         .about-left {
@@ -797,12 +915,6 @@
             font-size: clamp(1rem, 4vw, 2.5rem);
         }
 
-        .about-header-content {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: var(--space-6)
-        }
 
         .about-right {
             display: flex;
@@ -862,7 +974,7 @@
         .stats-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: var(--space-3);
+            gap: var(--space-4);
         }
 
         .stat-card {
@@ -904,109 +1016,512 @@
             font-weight: var(--font-weight-medium);
         }
 
-        /* ─── Mobile Menu Overlay ─────────────────────── */
-        .mobile-menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--color-white);
-            cursor: pointer;
-            padding: 8px;
-            transition: color var(--transition-base);
-            z-index: 1000;
-        }
-
-        .site-header.scrolled .mobile-menu-toggle {
-            color: var(--color-text-heading);
-        }
-
-        .mobile-menu-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 10000;
-            background: var(--color-brand-primary);
+        .marquee-content {
             display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+            gap: var(--space-2);
+            padding-right: var(--space-2);
+        }
+
+        @keyframes marquee-scroll {
+            to {
+                transform: translateX(calc(-50%));
+            }
+        }
+
+        .client-logo-wrapper {
+            display: flex;
+            align-items: center;
             justify-content: center;
-            padding-left: 10vw;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: var(--space-8);
+            width: 220px;
+            height: 120px;
+            flex-shrink: 0;
         }
 
-        .mobile-menu-overlay.active {
-            opacity: 1;
-            visibility: visible;
+        .client-logo {
+            max-width: 100%;
+            max-height: 40px;
+            object-fit: contain;
+            filter: grayscale(100%);
+            transition: all var(--transition-base);
         }
 
-        .mobile-menu-close {
-            position: absolute;
-            top: 24px;
-            right: 24px;
-            background: none;
-            border: none;
+        .card:hover .client-logo {
+            filter: grayscale(0%);
+        }
+
+        /* ─── Section: Service ─────────────────────────── */
+        .services-section {
+            background-color: var(--color-dark-3);
             color: var(--color-white);
-            cursor: pointer;
-            padding: 8px;
-            transition: transform var(--transition-fast);
         }
 
-        .mobile-menu-close:hover {
-            transform: scale(1.1);
-        }
-
-        .mobile-nav-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .services-list {
             display: flex;
             flex-direction: column;
+        }
+
+        .service-item {
+            display: grid;
+            grid-template-columns: 0.2fr 1fr;
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+
+        .service-num,
+        .service-content-wrapper {
+            padding: 2rem 0;
+            border-bottom: 1px solid transparent;
+            transition: border-color var(--transition-base);
+        }
+
+        .service-content-wrapper {
+            display: flex;
+            justify-content: space-between;
             align-items: flex-start;
-            gap: 28px;
+            gap: var(--space-8);
+            border-bottom-color: rgba(255, 255, 255, 0.1);
         }
 
-        .mobile-nav-list li {
+        .service-content-inner {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .service-icon-wrapper {
+            padding: 0;
+            border: none;
+        }
+
+        .service-item.active .service-num {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .service-num {
+            display: flex;
+            align-items: start;
+            margin-top: var(--space-3);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-muted);
+        }
+
+        .service-icon-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+        }
+
+        .service-icon {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all var(--transition-base);
+        }
+
+        .service-icon::before,
+        .service-icon::after {
+            content: '';
+            position: absolute;
+            background-color: var(--color-white);
+            transition: all var(--transition-base);
+        }
+
+        .service-icon::before {
+            width: 12px;
+            height: 1.5px;
+        }
+
+        .service-icon::after {
+            width: 1.5px;
+            height: 12px;
+        }
+
+        .service-item.active .service-icon {
+            transform: rotate(180deg);
+        }
+
+        .service-item.active .service-icon::after {
+            transform: rotate(90deg);
             opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .mobile-menu-overlay.active .mobile-nav-list li {
+        .service-title-collapsed-wrapper {
+            display: grid;
+            grid-template-rows: 1fr;
+            transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+        }
+
+        .service-title-collapsed-wrapper>div {
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .service-item.active .service-title-collapsed-wrapper {
+            grid-template-rows: 0fr;
+        }
+
+        .service-title-collapsed {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-medium);
+            padding-top: var(--space-2);
             opacity: 1;
             transform: translateY(0);
-            transition-delay: var(--anim-delay);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
         }
 
-        .mobile-nav-link {
-            font-size: 28px;
+        .service-item.active .service-title-collapsed {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .service-details-expanded-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+        }
+
+        .service-details-expanded-wrapper>div {
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .service-item.active .service-details-expanded-wrapper {
+            grid-template-rows: 1fr;
+        }
+
+        .service-details-expanded {
+            opacity: 0;
+            transform: translateY(-40px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            gap: var(--space-6);
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .service-item.active .service-details-expanded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Details */
+        .service-img-wrapper {
+            overflow: hidden;
+            width: 140px;
+            height: 80px;
+            flex-shrink: 0;
+            border-radius: var(--radius-lg);
+        }
+
+        .service-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .service-text-block {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+
+        .service-item-title {
+            max-width: 300px;
+            font-size: var(--font-size-2xl);
             font-weight: var(--font-weight-medium);
+        }
+
+        .service-subtitle {
+            font-size: var(--font-size-sm);
+            color: var(--color-muted);
+        }
+
+        .service-categories-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .service-categories-label {
+            font-size: var(--font-size-xs);
+            color: var(--color-muted);
+            margin-bottom: var(--space-2);
+            display: block;
+        }
+
+        .service-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+        }
+
+        .service-pill {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-2xl);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            padding: 0.6rem 1rem;
+            white-space: nowrap;
+        }
+
+        @media (min-width: 1200px) {
+            .service-details-expanded {
+                flex-direction: row;
+                align-items: start;
+                gap: var(--space-8);
+            }
+
+            .service-categories-wrapper {
+                flex: 1;
+                max-width: none;
+            }
+        }
+
+        /* ─── section: Review ──────────────────────────── */
+        .reviews-section {
+            background-color: var(--color-dark-3);
             color: var(--color-white);
-            text-decoration: none;
-            transition: opacity var(--transition-base);
         }
 
-        .mobile-nav-link:hover {
-            opacity: 0.8;
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-4);
         }
 
-        .mobile-nav-btn {
-            background-color: var(--color-white);
-            color: var(--color-text-heading);
-            padding: 14px 28px;
-            border-radius: 50px;
-            font-size: 18px;
+        .reviews-col {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-6);
+        }
+
+        .review-card {
+            background-color: var(--color-dark-3);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            transition: transform var(--transition-base), box-shadow var(--transition-base);
+        }
+
+        .review-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .review-card-large {
+            padding: var(--space-8);
+            min-height: 420px;
+            justify-content: space-between;
+        }
+
+        .review-card-small {
+            padding: var(--space-6);
+            flex-direction: row;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        .review-card-gradient {
+            padding: var(--space-8);
+            min-height: 480px;
+            justify-content: space-between;
+            background: radial-gradient(150% 100% at 50% 100%, color-mix(in srgb, var(--color-brand-primary) 30%, transparent), var(--color-dark-3) 60%);
+        }
+
+        .review-stars {
+            color: var(--color-white);
+            font-size: 1.25rem;
+            letter-spacing: 2px;
+        }
+
+        .review-quote {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.85);
+            margin: var(--space-6) 0 auto 0;
+        }
+
+        .review-card-gradient .review-quote {
+            margin-bottom: auto;
+        }
+
+        .review-stat-number {
+            font-size: 3.5rem;
+            font-weight: var(--font-weight-bold);
+            color: var(--color-white);
+            line-height: 1;
+            margin-bottom: var(--space-2);
+        }
+
+        .review-stat-label {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .review-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .review-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .review-author h4 {
+            font-size: 1rem;
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-white);
+            margin: 0 0 4px 0;
+        }
+
+        .review-author p {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0;
+        }
+
+        /* ─── Section: Contact ──────────────────────────── */
+        .contact-section {
+            background-color: var(--color-background);
+        }
+
+        .contact-layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.8fr;
+            gap: var(--space-20);
+        }
+
+        /* Sidebar */
+        .contact-info-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .contact-info-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-6);
+            padding-top: var(--space-8);
+            padding-bottom: var(--space-8);
+            border-top: 1px solid var(--color-border);
+        }
+
+        .contact-info-item:last-child {
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .contact-icon-wrapper {
+            width: 52px;
+            height: 52px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .contact-info-text h4 {
+            font-size: var(--font-size-lg);
             font-weight: var(--font-weight-medium);
-            text-decoration: none;
-            display: inline-block;
-            transition: transform var(--transition-fast);
+            margin-bottom: var(--space-2)
         }
 
-        .mobile-nav-btn:hover {
-            transform: scale(1.05);
+        .contact-info-text p {
+            font-size: var(--font-size-base);
+            color: var(--color-text-body);
         }
 
-        /* ─── FAQ Section ────────────────────────────── */
+        /* Form Card */
+        .contact-form-card {
+            padding: var(--space-10);
+            box-shadow: var(--shadow-md);
+        }
+
+        .contact-form-header {
+            margin-bottom: var(--space-12);
+        }
+
+        .contact-form-header h3 {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-medium);
+            line-height: var(--line-height-normal)
+        }
+
+        .contact-form-header p {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-normal);
+            color: var(--color-text-body);
+        }
+
+        .contact-form .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-6);
+            margin-bottom: var(--space-6);
+        }
+
+        .contact-form .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: var(--space-6);
+        }
+
+        .contact-form .form-row .form-group {
+            margin-bottom: 0;
+        }
+
+        .contact-form label {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--space-2);
+        }
+
+        .contact-form .form-control,
+        .contact-form .form-textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            background-color: var(--color-white);
+            font-family: inherit;
+            color: var(--color-dark-3);
+            font-size: var(--font-size-base);
+            transition: all var(--transition-base);
+            resize: none !important;
+        }
+
+        .contact-form .form-control:focus,
+        .contact-form .form-textarea:focus {
+            outline: none;
+            border-color: var(--color-dark-3);
+        }
+
+        .contact-form .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+
+        /* ─── Section: FAQ ──────────────────────────────── */
         .faq-section {
             background: var(--color-surface);
         }
@@ -1024,7 +1539,7 @@
             }
         }
 
-        /* ─── Accordion Styles ─── */
+        /* Accordion Styles */
         .faq-accordion {
             display: flex;
             flex-direction: column;
@@ -1060,12 +1575,12 @@
         .faq-icon::after {
             content: '';
             position: absolute;
-            background-color: var(--color-dark-3);
+            background-color: var(--color-black);
             /* Black lines for = */
             top: 50%;
             left: 50%;
             width: 12px;
-            height: 1.6px;
+            height: 1.5px;
             transition: all var(--transition-base)
         }
 
@@ -1116,7 +1631,7 @@
             padding: 0 32px 24px 32px;
         }
 
-        /* ─── Sticky Contact Card Styles ─── */
+        /*  Sticky Contact Card Styles */
         .faq-contact-card {
             position: sticky;
             top: 120px;
@@ -1262,7 +1777,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 2.5rem 0rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             font-size: var(--font-size-sm);
             color: var(--color-muted);
         }
@@ -1300,154 +1815,11 @@
             animation-play-state: paused;
         }
 
-        .marquee-content {
-            display: flex;
-            gap: var(--space-2);
-            padding-right: var(--space-4);
-        }
-
-        @keyframes marquee-scroll {
-            to {
-                transform: translateX(calc(-50%));
-            }
-        }
-
-        .client-logo-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: var(--space-8);
-            width: 220px;
-            height: 120px;
-            flex-shrink: 0;
-        }
-
-        .client-logo {
-            max-width: 100%;
-            max-height: 40px;
-            object-fit: contain;
-            filter: grayscale(100%);
-            transition: all var(--transition-base);
-        }
-
-        .card:hover .client-logo {
-            filter: grayscale(0%);
-        }
-
-        /* ─── Section: Reviews ──────────────────────────── */
-        .reviews-section {
-            background-color: var(--color-dark-3);
-            color: var(--color-white);
-        }
-
-        .reviews-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: var(--space-6);
-        }
-
-        .reviews-col {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-6);
-        }
-
-        .review-card {
-            background-color: var(--color-dark-3);
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
-            transition: transform var(--transition-base), box-shadow var(--transition-base);
-        }
-
-        .review-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
-        }
-
-        .review-card-large {
-            padding: var(--space-8);
-            min-height: 420px;
-            justify-content: space-between;
-        }
-
-        .review-card-small {
-            padding: var(--space-6);
-            flex-direction: row;
-            align-items: center;
-            gap: var(--space-4);
-        }
-
-        .review-card-gradient {
-            padding: var(--space-8);
-            min-height: 480px;
-            justify-content: space-between;
-            background: radial-gradient(150% 100% at 50% 100%, color-mix(in srgb, var(--color-brand-primary) 30%, transparent), var(--color-dark-3) 60%);
-        }
-
-        .review-stars {
-            color: var(--color-white);
-            font-size: 1.25rem;
-            letter-spacing: 2px;
-        }
-
-        .review-quote {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: rgba(255, 255, 255, 0.85);
-            margin: var(--space-6) 0 auto 0;
-        }
-
-        .review-card-gradient .review-quote {
-            margin-bottom: auto;
-        }
-
-        .review-stat-number {
-            font-size: 3.5rem;
-            font-weight: var(--font-weight-bold);
-            color: var(--color-white);
-            line-height: 1;
-            margin-bottom: var(--space-2);
-        }
-
-        .review-stat-label {
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .review-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        .review-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .review-author h4 {
-            font-size: 1rem;
-            font-weight: var(--font-weight-semibold);
-            color: var(--color-white);
-            margin: 0 0 4px 0;
-        }
-
-        .review-author p {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.6);
-            margin: 0;
-        }
-
         /* ─── Media Queries (Breakpoints) ──────── */
 
         /* Tablet Breakpoint (max-width: 1199.98px) */
         @media (max-width: 1199.98px) {
+            /* --- Header / Navbar --- */
 
             .site-header.scrolled {
                 width: 90%;
@@ -1465,23 +1837,79 @@
             .nav-list {
                 gap: var(--space-6);
             }
+
+            /* --- Services --- */
+            .service-item {
+                grid-template-columns: 0.2fr 1fr;
+            }
+
+            .service-num,
+            .service-content-wrapper {
+                padding: 1.5rem 0;
+            }
+
+            .service-content-wrapper {
+                gap: 0;
+            }
+
+            .service-icon-wrapper {
+                padding: 0;
+            }
+
+            .service-item.active .service-img-wrapper {
+                max-width: 100%;
+                max-height: 200px;
+                opacity: 1;
+            }
+
+            .service-item.active .service-img-wrapper img {
+                width: 200px;
+                height: 120px;
+            }
+
+            .service-item.active .service-subtitle {
+                max-height: 100px;
+                opacity: 1;
+                margin-top: 0.5rem;
+            }
+
+            .service-item.active .service-categories-wrapper {
+                max-height: 300px;
+                max-width: 100%;
+                opacity: 1;
+            }
         }
 
         @media (max-width: 992px) {
 
-            .section-header-content {
-                margin-bottom: var(--space-10);
+            /* --- General / Contact / About --- */
+            .section-container {
+                gap: var(--space-12);
+            }
+
+            .contact-layout-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-12);
+            }
+
+            .contact-form .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-form-card {
+                padding: var(--space-6);
             }
 
             .about-stats-container {
-                gap: var(--space-10);
+                gap: var(--space-12);
             }
 
+            /* --- About --- */
             .about-container {
                 grid-template-columns: 1fr;
-                gap: 3rem;
             }
 
+            /* --- CTA & Footer --- */
             .footer-modern-container {
                 grid-template-columns: 1fr 1fr;
                 gap: var(--space-8);
@@ -1528,6 +1956,7 @@
                 grid-template-columns: 1fr;
             }
 
+            /* --- CTA & Footer --- */
             .footer-modern-container {
                 grid-template-columns: 1fr;
             }
@@ -1755,8 +2184,10 @@
         <div class="section-container">
             <div class="about-stats-container">
                 <!-- ABOUT ROW -->
+                <!-- Body -->
                 <div class="about-container">
-                    <div class="about-header-content">
+                    <!-- Left Content -->
+                    <div class="section-header-left">
                         <span class="section-label">
                             <svg class="section-label-icon-spin" width="16" height="16" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1773,6 +2204,7 @@
                             clear, scalable
                             business infrastructure.</h2>
                     </div>
+                    <!-- Right Image Content -->
                     <div class="about-right"></div>
                 </div>
 
@@ -1873,91 +2305,207 @@
     <!-- ═══════════════════════════════════════════════════
        5. SERVICES SECTION
   ═══════════════════════════════════════════════════ -->
-    <!-- <section class="services-section" id="services">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Comprehensive <span class="text-gradient">IT & Security</span> Solutions</h2>
-                <p class="section-subtitle">Delivering industrial-standard quality and integration across four core
-                    disciplines for commercial, industrial, and residential sectors.</p>
+    <section class="services-section" id="services">
+        <div class="section-container">
+            <!-- Header -->
+            <div class="section-header-content section-header-left">
+                <span class="section-label" style="color: var(--color-white);">
+                    <svg class="section-label-icon-spin" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        <line x1="18" y1="8" x2="18" y2="16"></line>
+                    </svg>
+                    Our services
+                </span>
+                <h2 class="section-title">Comprehensive <br> IT & Security Solutions</h2>
             </div>
 
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                        </svg>
+            <!-- Body (Services List) -->
+            <div class="services-list">
+
+                <!-- Item 1 -->
+                <div class="service-item active">
+                    <div class="service-num">01</div>
+                    <div class="service-content-wrapper">
+                        <div class="service-content-inner">
+                            <div class="service-details-expanded-wrapper">
+                                <div>
+                                    <div class="service-details-expanded">
+                                        <div class="service-img-wrapper">
+                                            <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&q=80&w=400&h=300"
+                                                alt="Web Design">
+                                        </div>
+                                        <div class="service-text-block">
+                                            <h3 class="service-item-title">Web design and development</h3>
+                                            <p class="service-subtitle">Modern, responsive, and user-friendly websites
+                                                designed to
+                                                engage visitors and drive conversions.</p>
+                                        </div>
+                                        <div class="service-categories-wrapper">
+                                            <span class="service-categories-label">Categories</span>
+                                            <div class="service-categories">
+                                                <span class="service-pill">Packaging design</span>
+                                                <span class="service-pill">Logo design</span>
+                                                <span class="service-pill">Rebranding</span>
+                                                <span class="service-pill">Typography</span>
+                                                <span class="service-pill">Guidelines</span>
+                                                <span class="service-pill">Visual identity</span>
+                                                <span class="service-pill">6+</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="service-title-collapsed-wrapper">
+                                <div>
+                                    <h3 class="service-title-collapsed">Web design and development</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="service-icon-wrapper">
+                            <span class="service-icon"></span>
+                        </div>
                     </div>
-                    <h3 class="service-title">Security Solutions</h3>
-                    <p class="service-desc">Professional CCTV surveillance installation, intruder alarms, gate barriers,
-                        and complete perimeter control for enterprise environments.</p>
-                    <ul class="service-list">
-                        <li>Indoor & Outdoor CCTV</li>
-                        <li>NVR Centralized Management</li>
-                        <li>Fire & Intruder Alarms</li>
-                    </ul>
                 </div>
 
-                <div class="service-card">
-                    <div class="service-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                            <line x1="8" y1="21" x2="16" y2="21"></line>
-                            <line x1="12" y1="17" x2="12" y2="21"></line>
-                        </svg>
+                <!-- Item 2 -->
+                <div class="service-item">
+                    <div class="service-num">02</div>
+                    <div class="service-content-wrapper">
+                        <div class="service-content-inner">
+                            <div class="service-details-expanded-wrapper">
+                                <div>
+                                    <div class="service-details-expanded">
+                                        <div class="service-img-wrapper">
+                                            <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=400&h=300"
+                                                alt="Social Media">
+                                        </div>
+                                        <div class="service-text-block">
+                                            <h3 class="service-item-title">Social media marketing</h3>
+                                            <p class="service-subtitle">Comprehensive social media strategies to build
+                                                brand
+                                                awareness
+                                                and foster community engagement.</p>
+                                        </div>
+                                        <div class="service-categories-wrapper">
+                                            <span class="service-categories-label">Categories</span>
+                                            <div class="service-categories">
+                                                <span class="service-pill">Campaign strategy</span>
+                                                <span class="service-pill">Content creation</span>
+                                                <span class="service-pill">Analytics</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="service-title-collapsed-wrapper">
+                                <div>
+                                    <h3 class="service-title-collapsed">Social media marketing</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="service-icon-wrapper">
+                            <span class="service-icon"></span>
+                        </div>
                     </div>
-                    <h3 class="service-title">IT Solutions</h3>
-                    <p class="service-desc">Complete hardware services, custom PC assembling, software deployment, and
-                        rigorous data backup and recovery systems.</p>
-                    <ul class="service-list">
-                        <li>Server & PC Assembly</li>
-                        <li>Hardware Maintenance</li>
-                        <li>Data Backup & Recovery</li>
-                    </ul>
                 </div>
 
-                <div class="service-card">
-                    <div class="service-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
-                            <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
-                            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
-                            <line x1="12" y1="20" x2="12.01" y2="20"></line>
-                        </svg>
+                <!-- Item 3 -->
+                <div class="service-item">
+                    <div class="service-num">03</div>
+                    <div class="service-content-wrapper">
+                        <div class="service-content-inner">
+                            <div class="service-details-expanded-wrapper">
+                                <div>
+                                    <div class="service-details-expanded">
+                                        <div class="service-img-wrapper">
+                                            <img src="https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?auto=format&fit=crop&q=80&w=400&h=300"
+                                                alt="SEO">
+                                        </div>
+                                        <div class="service-text-block">
+                                            <h3 class="service-item-title">SEO and content marketing</h3>
+                                            <p class="service-subtitle">Data-driven search engine optimization and
+                                                high-quality content
+                                                strategies.</p>
+                                        </div>
+                                        <div class="service-categories-wrapper">
+                                            <span class="service-categories-label">Categories</span>
+                                            <div class="service-categories">
+                                                <span class="service-pill">Keyword research</span>
+                                                <span class="service-pill">Copywriting</span>
+                                                <span class="service-pill">Link building</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="service-title-collapsed-wrapper">
+                                <div>
+                                    <h3 class="service-title-collapsed">SEO and content marketing</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="service-icon-wrapper">
+                            <span class="service-icon"></span>
+                        </div>
                     </div>
-                    <h3 class="service-title">Network Solutions</h3>
-                    <p class="service-desc">Enterprise-grade wired and wireless networking, professional optic-fiber
-                        installation, and structured cabling systems.</p>
-                    <ul class="service-list">
-                        <li>Optic-Fiber Cabling</li>
-                        <li>Wi-Fi Network Deployment</li>
-                        <li>Telephony Integration</li>
-                    </ul>
                 </div>
 
-                <div class="service-card">
-                    <div class="service-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
+                <!-- Item 4 -->
+                <div class="service-item">
+                    <div class="service-num">04</div>
+                    <div class="service-content-wrapper">
+                        <div class="service-content-inner">
+                            <div class="service-details-expanded-wrapper">
+                                <div>
+                                    <div class="service-details-expanded">
+                                        <div class="service-img-wrapper">
+                                            <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=400&h=300"
+                                                alt="Branding">
+                                        </div>
+                                        <div class="service-text-block">
+                                            <h3 class="service-item-title">Branding and identity</h3>
+                                            <p class="service-subtitle">Crafting unique and memorable brand identities
+                                                that
+                                                resonate
+                                                with your target audience.</p>
+                                        </div>
+                                        <div class="service-categories-wrapper">
+                                            <span class="service-categories-label">Categories</span>
+                                            <div class="service-categories">
+                                                <span class="service-pill">Brand strategy</span>
+                                                <span class="service-pill">Positioning</span>
+                                                <span class="service-pill">Brand book</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="service-title-collapsed-wrapper">
+                                <div>
+                                    <h3 class="service-title-collapsed">Branding and identity</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="service-icon-wrapper">
+                            <span class="service-icon"></span>
+                        </div>
                     </div>
-                    <h3 class="service-title">Access Control & Biometrics</h3>
-                    <p class="service-desc">Advanced time-attendance systems, facial recognition, and RFID sensors with
-                        seamless HR application connectivity.</p>
-                    <ul class="service-list">
-                        <li>Facial & Fingerprint Recognition</li>
-                        <li>Time-Attendance Systems</li>
-                        <li>HR Software Integration</li>
-                    </ul>
                 </div>
+            </div>
+
+            <!-- Footer CTA -->
+            <div class="services-footer-cta">
+                <a href="#contact" class="btn btn-secondary btn-lg">
+                    <div class="hover-roll-text" data-text="Get started"><span>Get started</span></div>
+                </a>
             </div>
         </div>
-    </section> -->
+    </section>
 
     <!-- ═══════════════════════════════════════════════════
        6. PRODUCTS & SOLUTIONS SECTION
@@ -2078,6 +2626,7 @@
   ═══════════════════════════════════════════════════ -->
     <section class="reviews-section" id="reviews">
         <div class="section-container">
+            <!-- Header -->
             <div class="section-header-content" style="align-items: center; text-align: center;">
                 <span class="section-label" style="color: var(--color-white);">
                     <svg class="section-label-icon-spin" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -2094,6 +2643,7 @@
                 <h2 class="section-title" style="color: var(--color-white);">Stories shared by<br>trusted partners</h2>
             </div>
 
+            <!-- Body (Reviews Grid) -->
             <div class="reviews-grid">
                 <!-- Column 1 -->
                 <div class="reviews-col">
@@ -2172,10 +2722,125 @@
     </section>
 
     <!-- ═══════════════════════════════════════════════════
+       11. CONTACT SECTION
+  ═══════════════════════════════════════════════════ -->
+    <section class="contact-section" id="contact">
+        <div class="section-container">
+            <!-- Header -->
+            <div class="section-header-content">
+                <span class="section-label">
+                    <svg class="section-label-icon-spin" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        <line x1="18" y1="8" x2="18" y2="16"></line>
+                    </svg>
+                    Contact
+                </span>
+                <h2 class="section-title">Ready to start<br>your next project?</h2>
+            </div>
+
+            <!-- Body -->
+            <div class="contact-layout-grid">
+                <!-- Left Sidebar -->
+                <div class="contact-sidebar">
+                    <div class="contact-info-list">
+                        <div class="contact-info-item">
+                            <div class="contact-icon-wrapper">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <div class="contact-info-text">
+                                <h4>Phone</h4>
+                                <p style="margin-bottom: 0.2rem;">+971 2 553 8526</p>
+                                <p style="margin-bottom: 0.2rem;">+971 55 518 4464</p>
+                                <p>+971 52 374 0270</p>
+                            </div>
+                        </div>
+                        <div class="contact-info-item">
+                            <div class="contact-icon-wrapper">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path
+                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                    </path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            </div>
+                            <div class="contact-info-text">
+                                <h4>Email</h4>
+                                <p>sales@firstemirate.com</p>
+                            </div>
+                        </div>
+                        <div class="contact-info-item">
+                            <div class="contact-icon-wrapper">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                            </div>
+                            <div class="contact-info-text">
+                                <h4>Location</h4>
+                                <p>Musaffah 9, Abu Dhabi,<br>UAE P.O. Box 38575</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Form Card -->
+                <div class="card contact-form-card">
+                    <div class="contact-form-header">
+                        <h3>We are here to help</h3>
+                        <p>Have questions or need support? Reach out to our team for expert guidance</p>
+                    </div>
+                    <form class="contact-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" class="form-control" placeholder="Jane Smith" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone number</label>
+                                <input type="tel" class="form-control" placeholder="+971 50 123 4567" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" class="form-control" placeholder="jane@company.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Subject</label>
+                                <input type="text" class="form-control" placeholder="IT Infrastructure" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Tell us about your project</label>
+                            <textarea class="form-textarea" placeholder="Your message here ....." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-dark btn-lg">
+                            <div class="hover-roll-text" data-text="Send a message"><span>Send a message</span></div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
        10. FAQ SECTION
   ═══════════════════════════════════════════════════ -->
     <section class="faq-section" id="faq">
         <div class="section-container">
+            <!-- Header -->
             <div class="section-header-content">
                 <span class="section-label">
                     <svg class="section-label-icon-spin" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -2192,7 +2857,9 @@
                 <h2 class="section-title">Frequently asked<br>questions answered</h2>
             </div>
 
+            <!-- Body -->
             <div class="faq-grid">
+                <!-- FAQ Accordion -->
                 <div class="faq-accordion">
                     <div class="card faq-item">
                         <button class="faq-question">
@@ -2262,6 +2929,7 @@
                     </div>
                 </div>
 
+                <!-- Contact Card -->
                 <div class="card card-body faq-contact-card">
                     <h3 class="card-title faq-contact-title">Send us an email anytime<br>and we'll respond
                         with<br>support or
@@ -2276,114 +2944,11 @@
     </section>
 
     <!-- ═══════════════════════════════════════════════════
-       11. CONTACT SECTION
-  ═══════════════════════════════════════════════════ -->
-    <!-- <section class="contact-section" id="contact">
-        <div class="container contact-container">
-            <div class="contact-info">
-                <h2 class="section-title" style="text-align: left;">Get in <span class="text-gradient">Touch</span></h2>
-                <p class="section-subtitle" style="text-align: left; margin-bottom: var(--space-8);">
-                    Ready to upgrade your IT infrastructure or security systems? Contact our Abu Dhabi team for a
-                    consultation and tailored quotation.
-                </p>
-
-                <div class="contact-methods">
-                    <div class="contact-method">
-                        <div class="method-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path
-                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
-                                </path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="method-title">Main Office</h4>
-                            <a href="tel:+97125538526" class="method-link">+971 2 553 8526</a>
-                        </div>
-                    </div>
-                    <div class="contact-method">
-                        <div class="method-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path
-                                    d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
-                                </path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="method-title">WhatsApp Support</h4>
-                            <a href="https://wa.me/971555184464" class="method-link">Product: +971 55 518 4464</a><br />
-                            <a href="https://wa.me/971523740270" class="method-link">Project: +971 52 374 0270</a>
-                        </div>
-                    </div>
-                    <div class="contact-method">
-                        <div class="method-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
-                                </path>
-                                <polyline points="22,6 12,13 2,6"></polyline>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="method-title">Email Us</h4>
-                            <a href="mailto:sales@firstemirate.com" class="method-link">sales@firstemirate.com</a>
-                        </div>
-                    </div>
-                    <div class="contact-method">
-                        <div class="method-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                <circle cx="12" cy="10" r="3"></circle>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="method-title">Headquarters</h4>
-                            <p class="method-text">Musaffah 9, P.O. Box: 38575<br />Abu Dhabi, United Arab Emirates</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="contact-form-wrapper">
-                <form class="contact-form">
-                    <h3 class="form-title">Request a Quote</h3>
-                    <div class="form-group">
-                        <label for="name">Full Name</label>
-                        <input type="text" id="name" class="form-control" placeholder="John Doe" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" class="form-control" placeholder="john@company.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="service">Interested Service</label>
-                        <select id="service" class="form-control" required>
-                            <option value="" disabled selected>Select a Service</option>
-                            <option value="cctv">CCTV & Security</option>
-                            <option value="it">IT Hardware & AMC</option>
-                            <option value="network">Networking & Cabling</option>
-                            <option value="biometric">Access Control</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" class="form-control" rows="4" placeholder="How can we help you?"
-                            required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Request</button>
-                </form>
-            </div>
-        </div>
-    </section> -->
-
-    <!-- ═══════════════════════════════════════════════════
        12. CTA & FOOTER
   ═══════════════════════════════════════════════════ -->
     <section class="cta-footer-section" id="cta-footer">
         <div class="container">
+            <!-- CTA Block -->
             <div class="cta-content">
                 <h2 class="section-title">Scale your business<br>without compromise</h2>
                 <p class="section-subtitle">
@@ -2391,14 +2956,15 @@
                     business growth.
                 </p>
                 <div class="cta-btn-wrapper">
-                    <a href="#contact" class="btn btn-secondary btn-lg"
-                        style="background-color: var(--color-dark-3); color: var(--color-white); border: none;">
+                    <a href="#contact" class="btn btn-dark btn-lg">
                         <div class="hover-roll-text" data-text="Let's start today"><span>Let's start today</span></div>
                     </a>
                 </div>
             </div>
 
+            <!-- Main Footer -->
             <footer class="site-footer-modern">
+                <!-- Footer Links Grid -->
                 <div class="footer-modern-container">
                     <div class="footer-col footer-brand-modern">
                         <a href="/" class="brand-logo">
@@ -2466,6 +3032,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- Footer Bottom (Copyright) -->
                 <div class="footer-bottom-modern">
                     <p class="footer-copy">
                         &copy;2026 First Emirates. All rights reserved.
@@ -2582,6 +3149,16 @@
                 if (!isActive) {
                     item.classList.add('active');
                 }
+            });
+        });
+
+        /* ─── Services Accordion Interactivity ─── */
+        const serviceItems = document.querySelectorAll('.service-item');
+
+        serviceItems.forEach(item => {
+            // Click to toggle
+            item.addEventListener('click', () => {
+                item.classList.toggle('active');
             });
         });
     </script>
