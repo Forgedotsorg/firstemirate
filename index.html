@@ -1230,7 +1230,8 @@
         }
 
         .service-text-block {
-            width: 400px;
+            width: 100%;
+            max-width: 400px;
             display: flex;
             flex-direction: column;
             gap: var(--space-4);
@@ -1244,6 +1245,8 @@
 
         .service-subtitle {
             font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            line-height: var(--line-height-normal);
             color: var(--color-muted);
         }
 
@@ -1288,6 +1291,134 @@
             }
         }
 
+        /* ─── Section: Why Choose Us ──────────────────────── */
+        .why-section {
+            background-color: var(--color-surface);
+        }
+
+        .why-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-4);
+        }
+
+        .why-image-wrapper {
+            grid-column: 1;
+            min-height: 380px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            background-color: var(--color-white);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            /* padding: var(--space-8); */
+        }
+
+        .why-spinning-img {
+            position: absolute;
+            top: -120px;
+            right: -120px;
+            width: 350px;
+            height: 350px;
+            animation: spin-infinite 20s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+            display: none;
+        }
+
+        .why-spinning-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        @keyframes spin-infinite {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .why-image-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .why-image-title {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-heading);
+            margin-bottom: var(--space-4);
+        }
+
+        .why-image-desc {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-body);
+            line-height: var(--line-height-normal);
+            margin: 0;
+            max-width: 85%;
+        }
+
+        .why-right-bento {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5px;
+            background-color: var(--color-border);
+            /* border: 1px solid var(--color-border); */
+            overflow: hidden;
+            grid-column: 2;
+            border-radius: var(--radius-md);
+        }
+
+        .why-bento-card {
+            background-color: var(--color-white);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 240px;
+            padding: var(--space-6);
+        }
+
+        .why-bento-card:hover .why-bento-icon-wrapper {
+            scale: 1.1;
+        }
+
+        .why-bento-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            background-color: var(--color-surface);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--space-12);
+            transition: all var(--transition-base);
+        }
+
+        .why-bento-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .why-bento-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-medium);
+            margin: 0;
+        }
+
+        .why-bento-desc {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            line-height: var(--line-height-normal);
+            color: var(--color-text-body);
+        }
+
         /* ─── section: Review ──────────────────────────── */
         .reviews-section {
             background-color: var(--color-dark-3);
@@ -1308,7 +1439,6 @@
 
         .review-card {
             background-color: var(--color-dark-3);
-            border-radius: var(--radius-lg);
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             display: flex;
@@ -1322,7 +1452,7 @@
         }
 
         .review-card-large {
-            padding: var(--space-8);
+            padding: var(--space-6);
             min-height: 420px;
             justify-content: space-between;
         }
@@ -1335,8 +1465,8 @@
         }
 
         .review-card-gradient {
-            padding: var(--space-8);
-            min-height: 480px;
+            padding: var(--space-6);
+            min-height: 420px;
             justify-content: space-between;
             background: radial-gradient(150% 100% at 50% 100%, color-mix(in srgb, var(--color-brand-primary) 30%, transparent), var(--color-dark-3) 60%);
         }
@@ -1348,8 +1478,9 @@
         }
 
         .review-quote {
-            font-size: 1.1rem;
-            line-height: 1.6;
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            line-height: var(--line-height-normal);
             color: rgba(255, 255, 255, 0.85);
             margin: var(--space-6) 0 auto 0;
         }
@@ -1359,16 +1490,13 @@
         }
 
         .review-stat-number {
-            font-size: 3.5rem;
-            font-weight: var(--font-weight-bold);
-            color: var(--color-white);
-            line-height: 1;
+            font-size: var(--font-size-4xl);
+            font-weight: var(--font-weight-medium);
             margin-bottom: var(--space-2);
         }
 
         .review-stat-label {
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.6);
+            font-size: var(--font-size-sm);
         }
 
         .review-avatar {
@@ -1447,6 +1575,7 @@
 
         .contact-info-text p {
             font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
             color: var(--color-text-body);
         }
 
@@ -1457,6 +1586,9 @@
         }
 
         .contact-form-header {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
             margin-bottom: var(--space-12);
         }
 
@@ -1467,8 +1599,8 @@
         }
 
         .contact-form-header p {
-            font-size: var(--font-size-base);
-            font-weight: var(--font-weight-normal);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
             color: var(--color-text-body);
         }
 
@@ -1819,6 +1951,18 @@
 
         /* Tablet Breakpoint (max-width: 1199.98px) */
         @media (max-width: 1199.98px) {
+
+            /* --- Why Choose Us --- */
+            .why-layout {
+                display: flex;
+                flex-direction: column;
+                gap: var(--space-4);
+            }
+
+            .why-image-wrapper {
+                margin-bottom: 0;
+            }
+
             /* --- Header / Navbar --- */
 
             .site-header.scrolled {
@@ -1856,21 +2000,10 @@
                 padding: 0;
             }
 
-            .service-item.active .service-img-wrapper {
-                max-width: 100%;
-                max-height: 200px;
-                opacity: 1;
-            }
-
-            .service-item.active .service-img-wrapper img {
-                width: 200px;
-                height: 120px;
-            }
-
             .service-item.active .service-subtitle {
-                max-height: 100px;
                 opacity: 1;
                 margin-top: 0.5rem;
+                max-height: none;
             }
 
             .service-item.active .service-categories-wrapper {
@@ -1940,6 +2073,12 @@
         }
 
         @media (max-width: 768px) {
+
+            /* --- Why Choose Us --- */
+            .why-right-bento {
+                grid-template-columns: 1fr;
+            }
+
             .faq-question {
                 padding: 20px 24px;
             }
@@ -2336,25 +2475,24 @@
                                 <div>
                                     <div class="service-details-expanded">
                                         <div class="service-img-wrapper">
-                                            <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&q=80&w=400&h=300"
-                                                alt="Web Design">
+                                            <img src="https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&q=80&w=400&h=300"
+                                                alt="Security Solutions">
                                         </div>
                                         <div class="service-text-block">
-                                            <h3 class="service-item-title">Web design and development</h3>
-                                            <p class="service-subtitle">Modern, responsive, and user-friendly websites
-                                                designed to
-                                                engage visitors and drive conversions.</p>
+                                            <h3 class="service-item-title">Security Solutions</h3>
+                                            <p class="service-subtitle">End-to-end security installations including
+                                                CCTV, alarms, and advanced home automation systems.</p>
                                         </div>
                                         <div class="service-categories-wrapper">
                                             <span class="service-categories-label">Categories</span>
                                             <div class="service-categories">
-                                                <span class="service-pill">Packaging design</span>
-                                                <span class="service-pill">Logo design</span>
-                                                <span class="service-pill">Rebranding</span>
-                                                <span class="service-pill">Typography</span>
-                                                <span class="service-pill">Guidelines</span>
-                                                <span class="service-pill">Visual identity</span>
-                                                <span class="service-pill">6+</span>
+                                                <span class="service-pill">CCTV Installation & Maintenance</span>
+                                                <span class="service-pill">Audio/Video Intercoms</span>
+                                                <span class="service-pill">Home Automation</span>
+                                                <span class="service-pill">GPS Vehicle Tracking</span>
+                                                <span class="service-pill">Gate Barriers</span>
+                                                <span class="service-pill">Intruder Alarms</span>
+                                                <span class="service-pill">Fire Detection Systems</span>
                                             </div>
                                         </div>
                                     </div>
@@ -2362,7 +2500,7 @@
                             </div>
                             <div class="service-title-collapsed-wrapper">
                                 <div>
-                                    <h3 class="service-title-collapsed">Web design and development</h3>
+                                    <h3 class="service-title-collapsed">Security Solutions</h3>
                                 </div>
                             </div>
                         </div>
@@ -2381,22 +2519,24 @@
                                 <div>
                                     <div class="service-details-expanded">
                                         <div class="service-img-wrapper">
-                                            <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=400&h=300"
-                                                alt="Social Media">
+                                            <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=400&h=300"
+                                                alt="IT Solutions">
                                         </div>
                                         <div class="service-text-block">
-                                            <h3 class="service-item-title">Social media marketing</h3>
-                                            <p class="service-subtitle">Comprehensive social media strategies to build
-                                                brand
-                                                awareness
-                                                and foster community engagement.</p>
+                                            <h3 class="service-item-title">IT Solutions</h3>
+                                            <p class="service-subtitle">Complete hardware and software support, from PC
+                                                assembly to enterprise data recovery and omnichannel support.</p>
                                         </div>
                                         <div class="service-categories-wrapper">
                                             <span class="service-categories-label">Categories</span>
                                             <div class="service-categories">
-                                                <span class="service-pill">Campaign strategy</span>
-                                                <span class="service-pill">Content creation</span>
-                                                <span class="service-pill">Analytics</span>
+                                                <span class="service-pill">Hardware Repair & Maintenance</span>
+                                                <span class="service-pill">PC Assembling</span>
+                                                <span class="service-pill">Software Deployment</span>
+                                                <span class="service-pill">Data Backup & Recovery</span>
+                                                <span class="service-pill">System Troubleshooting</span>
+                                                <span class="service-pill">Academic IT Solutions</span>
+                                                <span class="service-pill">Digital Marketing</span>
                                             </div>
                                         </div>
                                     </div>
@@ -2404,7 +2544,7 @@
                             </div>
                             <div class="service-title-collapsed-wrapper">
                                 <div>
-                                    <h3 class="service-title-collapsed">Social media marketing</h3>
+                                    <h3 class="service-title-collapsed">IT Solutions</h3>
                                 </div>
                             </div>
                         </div>
@@ -2423,21 +2563,23 @@
                                 <div>
                                     <div class="service-details-expanded">
                                         <div class="service-img-wrapper">
-                                            <img src="https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?auto=format&fit=crop&q=80&w=400&h=300"
-                                                alt="SEO">
+                                            <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=400&h=300"
+                                                alt="Network Solutions">
                                         </div>
                                         <div class="service-text-block">
-                                            <h3 class="service-item-title">SEO and content marketing</h3>
-                                            <p class="service-subtitle">Data-driven search engine optimization and
-                                                high-quality content
-                                                strategies.</p>
+                                            <h3 class="service-item-title">Network Solutions</h3>
+                                            <p class="service-subtitle">Enterprise-level network deployments,
+                                                professional cabling, and telephony integration.</p>
                                         </div>
                                         <div class="service-categories-wrapper">
                                             <span class="service-categories-label">Categories</span>
                                             <div class="service-categories">
-                                                <span class="service-pill">Keyword research</span>
-                                                <span class="service-pill">Copywriting</span>
-                                                <span class="service-pill">Link building</span>
+                                                <span class="service-pill">Public Announcement (PA) Systems</span>
+                                                <span class="service-pill">Optic-Fiber Cabling</span>
+                                                <span class="service-pill">Structured Cabling</span>
+                                                <span class="service-pill">Wired & Wi-Fi Networks</span>
+                                                <span class="service-pill">Telephony Integration</span>
+                                                <span class="service-pill">Total Office Setup</span>
                                             </div>
                                         </div>
                                     </div>
@@ -2445,7 +2587,7 @@
                             </div>
                             <div class="service-title-collapsed-wrapper">
                                 <div>
-                                    <h3 class="service-title-collapsed">SEO and content marketing</h3>
+                                    <h3 class="service-title-collapsed">Network Solutions</h3>
                                 </div>
                             </div>
                         </div>
@@ -2464,22 +2606,22 @@
                                 <div>
                                     <div class="service-details-expanded">
                                         <div class="service-img-wrapper">
-                                            <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=400&h=300"
-                                                alt="Branding">
+                                            <img src="https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?auto=format&fit=crop&q=80&w=400&h=300"
+                                                alt="IT Infrastructure">
                                         </div>
                                         <div class="service-text-block">
-                                            <h3 class="service-item-title">Branding and identity</h3>
-                                            <p class="service-subtitle">Crafting unique and memorable brand identities
-                                                that
-                                                resonate
-                                                with your target audience.</p>
+                                            <h3 class="service-item-title">IT Infrastructure</h3>
+                                            <p class="service-subtitle">Supply and deployment of industrial-grade
+                                                networking hardware, software licenses, and server solutions.</p>
                                         </div>
                                         <div class="service-categories-wrapper">
                                             <span class="service-categories-label">Categories</span>
                                             <div class="service-categories">
-                                                <span class="service-pill">Brand strategy</span>
-                                                <span class="service-pill">Positioning</span>
-                                                <span class="service-pill">Brand book</span>
+                                                <span class="service-pill">Fiber Optic & CAT Cabling</span>
+                                                <span class="service-pill">Patch Cords & Adapters</span>
+                                                <span class="service-pill">UPS Systems</span>
+                                                <span class="service-pill">Server Cabinets</span>
+                                                <span class="service-pill">Enterprise License Solutions</span>
                                             </div>
                                         </div>
                                     </div>
@@ -2487,7 +2629,91 @@
                             </div>
                             <div class="service-title-collapsed-wrapper">
                                 <div>
-                                    <h3 class="service-title-collapsed">Branding and identity</h3>
+                                    <h3 class="service-title-collapsed">IT Infrastructure</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="service-icon-wrapper">
+                            <span class="service-icon"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 5 -->
+                <div class="service-item">
+                    <div class="service-num">05</div>
+                    <div class="service-content-wrapper">
+                        <div class="service-content-inner">
+                            <div class="service-details-expanded-wrapper">
+                                <div>
+                                    <div class="service-details-expanded">
+                                        <div class="service-img-wrapper">
+                                            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=400&h=300"
+                                                alt="Access Control & Biometrics">
+                                        </div>
+                                        <div class="service-text-block">
+                                            <h3 class="service-item-title">Access Control & Biometrics</h3>
+                                            <p class="service-subtitle">Standalone and networked access control systems
+                                                integrated seamlessly with your HR and control-room applications.</p>
+                                        </div>
+                                        <div class="service-categories-wrapper">
+                                            <span class="service-categories-label">Categories</span>
+                                            <div class="service-categories">
+                                                <span class="service-pill">Time-Attendance Systems</span>
+                                                <span class="service-pill">Fingerprint Recognition</span>
+                                                <span class="service-pill">Facial Recognition</span>
+                                                <span class="service-pill">RFID & Proximity Sensors</span>
+                                                <span class="service-pill">HR & Control-Room Integration</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="service-title-collapsed-wrapper">
+                                <div>
+                                    <h3 class="service-title-collapsed">Access Control & Biometrics</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="service-icon-wrapper">
+                            <span class="service-icon"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 6 -->
+                <div class="service-item">
+                    <div class="service-num">06</div>
+                    <div class="service-content-wrapper">
+                        <div class="service-content-inner">
+                            <div class="service-details-expanded-wrapper">
+                                <div>
+                                    <div class="service-details-expanded">
+                                        <div class="service-img-wrapper">
+                                            <img src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&q=80&w=400&h=300"
+                                                alt="Annual Maintenance Contracts (AMC)">
+                                        </div>
+                                        <div class="service-text-block">
+                                            <h3 class="service-item-title">Annual Maintenance Contracts (AMC)</h3>
+                                            <p class="service-subtitle">Customized and integrated maintenance contracts
+                                                designed to ensure consistent system performance for business customers.
+                                            </p>
+                                        </div>
+                                        <div class="service-categories-wrapper">
+                                            <span class="service-categories-label">Categories</span>
+                                            <div class="service-categories">
+                                                <span class="service-pill">Security System Maintenance</span>
+                                                <span class="service-pill">Hardware Maintenance</span>
+                                                <span class="service-pill">Network Support</span>
+                                                <span class="service-pill">Rapid Troubleshooting</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="service-title-collapsed-wrapper">
+                                <div>
+                                    <h3 class="service-title-collapsed">Annual Maintenance Contracts (AMC)</h3>
                                 </div>
                             </div>
                         </div>
@@ -2568,58 +2794,142 @@
     <!-- ═══════════════════════════════════════════════════
        8. WHY CHOOSE US SECTION
   ═══════════════════════════════════════════════════ -->
-    <!-- <section class="why-section" id="why-us">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">The First Emirates <span class="text-gradient">Advantage</span></h2>
-                <p class="section-subtitle">7 reasons why businesses across the UAE trust us as their all-in-one
-                    integration partner.</p>
+    <section class="why-section" id="why-us">
+        <div class="section-container">
+            <!-- Header -->
+            <div class="section-header-left">
+                <span class="section-label">
+                    <svg class="section-label-icon-spin" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        <line x1="18" y1="8" x2="18" y2="16"></line>
+                    </svg>
+                    Why Choose Us
+                </span>
+                <h2 class="section-title">The First Emirates <br> Advantage</h2>
             </div>
 
-            <div class="features-grid">
-                <div class="feature-item">
-                    <div class="feature-number">01</div>
-                    <h4 class="feature-title">Comprehensive Integration</h4>
-                    <p class="feature-desc">Single-source provider reducing vendor fragmentation and simplifying
-                        procurement.</p>
+            <!-- Body (List) -->
+            <div class="why-layout">
+                <!-- Top / Left-Top -->
+                <div class="card card-body why-image-wrapper">
+                    <div class="why-spinning-img">
+                        <img src="./images/why-us-img2.avif" alt="Rotating graphic">
+                    </div>
+                    <div class="why-image-content">
+                        <h3 class="why-image-title">Comprehensive Integration</h3>
+                        <p class="why-image-desc">Single-source provider reducing vendor fragmentation and simplifying
+                            procurement.</p>
+                    </div>
                 </div>
-                <div class="feature-item">
-                    <div class="feature-number">02</div>
-                    <h4 class="feature-title">Industrial-Standard Quality</h4>
-                    <p class="feature-desc">Products selected from trusted, globally recognized brands ensuring
-                        reliability.</p>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-number">03</div>
-                    <h4 class="feature-title">Budget Flexibility</h4>
-                    <p class="feature-desc">Commitment to optimal solutions within your specific budget constraints.</p>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-number">04</div>
-                    <h4 class="feature-title">Complete Service Lifecycle</h4>
-                    <p class="feature-desc">Product supply, professional installation, configuration, and ongoing
-                        technical AMC support.</p>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-number">05</div>
-                    <h4 class="feature-title">Customization Capability</h4>
-                    <p class="feature-desc">Integrated systems designed for your unique business requirements.</p>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-number">06</div>
-                    <h4 class="feature-title">Rapid Support</h4>
-                    <p class="feature-desc">Prompt service delivery with specialized WhatsApp, phone, and email
-                        channels.</p>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-number">07</div>
-                    <h4 class="feature-title">Local Expertise</h4>
-                    <p class="feature-desc">Established Abu Dhabi presence with deep knowledge of UAE regulatory
-                        compliance.</p>
+
+                <!-- Desktop Right / Mobile Bottom -->
+                <div class="why-right-bento">
+                    <!-- Item 2 -->
+                    <div class="why-bento-card">
+                        <div class="why-bento-icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                        </div>
+                        <div class="why-bento-content">
+                            <h4 class="why-bento-title">Industrial-Standard Quality</h4>
+                            <p class="why-bento-desc">Products selected from trusted, globally recognized brands
+                                ensuring reliability.</p>
+                        </div>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="why-bento-card">
+                        <div class="why-bento-icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                        <div class="why-bento-content">
+                            <h4 class="why-bento-title">Budget Flexibility</h4>
+                            <p class="why-bento-desc">Commitment to optimal solutions within your specific budget
+                                constraints.</p>
+                        </div>
+                    </div>
+
+                    <!-- Item 4 -->
+                    <div class="why-bento-card">
+                        <div class="why-bento-icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                                <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                            </svg>
+                        </div>
+                        <div class="why-bento-content">
+                            <h4 class="why-bento-title">Complete Service Lifecycle</h4>
+                            <p class="why-bento-desc">Product supply, professional installation, configuration, and
+                                ongoing technical AMC support.</p>
+                        </div>
+                    </div>
+
+                    <!-- Item 5 -->
+                    <div class="why-bento-card">
+                        <div class="why-bento-icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path
+                                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div class="why-bento-content">
+                            <h4 class="why-bento-title">Customization Capability</h4>
+                            <p class="why-bento-desc">Integrated systems designed for your unique business requirements.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Item 6 -->
+                    <div class="why-bento-card">
+                        <div class="why-bento-icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div class="why-bento-content">
+                            <h4 class="why-bento-title">Rapid Support</h4>
+                            <p class="why-bento-desc">Prompt service delivery with specialized WhatsApp, phone, and
+                                email channels.</p>
+                        </div>
+                    </div>
+
+                    <!-- Item 7 -->
+                    <div class="why-bento-card">
+                        <div class="why-bento-icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                        </div>
+                        <div class="why-bento-content">
+                            <h4 class="why-bento-title">Local Expertise</h4>
+                            <p class="why-bento-desc">Established Abu Dhabi presence with deep knowledge of UAE
+                                regulatory compliance.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </section> -->
+    </section>
 
     <!-- ═══════════════════════════════════════════════════
        9. REVIEWS SECTION
@@ -2647,7 +2957,7 @@
             <div class="reviews-grid">
                 <!-- Column 1 -->
                 <div class="reviews-col">
-                    <div class="review-card review-card-large">
+                    <div class="card review-card review-card-large">
                         <div class="review-stars">★★★★★</div>
                         <p class="review-quote">"First Emirates Computers completely transformed how we manage our IT
                             infrastructure. Their seamless structured cabling and network setup eliminated our
@@ -2657,7 +2967,7 @@
                             <p class="review-stat-label">Successful projects</p>
                         </div>
                     </div>
-                    <div class="review-card review-card-small">
+                    <div class="card review-card review-card-small">
                         <div class="review-avatar">
                             <img src="https://ui-avatars.com/api/?name=Ahmed+Al-Mansoori&background=2c2c2c&color=fff"
                                 alt="Ahmed Al-Mansoori">
@@ -2671,7 +2981,7 @@
 
                 <!-- Column 2 -->
                 <div class="reviews-col">
-                    <div class="review-card review-card-small">
+                    <div class="card review-card review-card-small">
                         <div class="review-avatar">
                             <img src="https://ui-avatars.com/api/?name=Fatima+Khalid&background=2c2c2c&color=fff"
                                 alt="Fatima Khalid">
@@ -2681,7 +2991,7 @@
                             <p>Facility Manager</p>
                         </div>
                     </div>
-                    <div class="review-card review-card-gradient">
+                    <div class="card review-card review-card-gradient">
                         <div class="review-stars">★★★★★</div>
                         <p class="review-quote">"Their customized Annual Maintenance Contract provides incredible peace
                             of mind. Any CCTV or access control issue is resolved rapidly, allowing us to focus on our
@@ -2696,7 +3006,7 @@
 
                 <!-- Column 3 -->
                 <div class="reviews-col">
-                    <div class="review-card review-card-large">
+                    <div class="card review-card review-card-large">
                         <div class="review-stars">★★★★★</div>
                         <p class="review-quote">"What stood out most was their ability to build scalable security
                             workflows that integrated perfectly with our existing systems while maintaining long-term
@@ -2706,7 +3016,7 @@
                             <p class="review-stat-label">Client satisfaction</p>
                         </div>
                     </div>
-                    <div class="review-card review-card-small">
+                    <div class="card review-card review-card-small">
                         <div class="review-avatar">
                             <img src="https://ui-avatars.com/api/?name=Daniel+Brooks&background=2c2c2c&color=fff"
                                 alt="Daniel Brooks">
