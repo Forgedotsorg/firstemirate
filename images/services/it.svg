@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 160" width="280" height="160" role="img" aria-label="IT solutions — workstation">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1c1c1c"/>
+      <stop offset="1" stop-color="#0b0b0b"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="1.08" r="0.62">
+      <stop offset="0" stop-color="#b40303" stop-opacity="0.75"/>
+      <stop offset="0.55" stop-color="#b40303" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#b40303" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff4d4d" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#ff4d4d" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse">
+      <circle cx="7" cy="7" r="0.8" fill="#fff" fill-opacity="0.07"/>
+    </pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M1 1 L9 5 L1 9" fill="none" stroke="#ff4d4d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      .l{fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.4}
+      .m{stroke-opacity:.35}
+      .f{stroke-opacity:.18}
+      .r{stroke:#ff4d4d}
+      .rf{fill:#ff4d4d}
+    </style>
+  </defs>
+  <rect width="280" height="160" fill="url(#bg)"/>
+  <rect width="280" height="160" fill="url(#dots)"/>
+  <rect width="280" height="160" fill="url(#glow)"/>
+  <path class="l f" d="M24 150 H256"/>
+  <rect class="l" x="84" y="28" width="112" height="70" rx="6"/>
+  <path class="l m" d="M84 40 H196"/>
+  <circle class="rf" cx="93" cy="34" r="1.8"/>
+  <circle cx="100" cy="34" r="1.8" fill="#fff" fill-opacity=".35"/>
+  <circle cx="107" cy="34" r="1.8" fill="#fff" fill-opacity=".35"/>
+  <path class="l" d="M98 54 H138"/>
+  <path class="l m" d="M98 64 H162 M106 74 H148 M98 84 H126"/>
+  <rect class="rf" x="130" y="79" width="2.4" height="10" rx="1"/>
+  <path class="l" d="M130 98 L126 116 H154 L150 98 M114 118 H166"/>
+  <circle class="l r" cx="196" cy="30" r="10" fill="#111"/>
+  <path class="l r" d="M191 30 L195 34 L202 26"/>
+  <rect x="0.5" y="0.5" width="279" height="159" rx="0" fill="none" stroke="#fff" stroke-opacity="0.06"/>
+</svg>

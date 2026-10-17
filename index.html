@@ -42,8 +42,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Sora:wght@300;400;500;600&display=swap"
         rel="stylesheet" />
+
+    <!-- Three.js (hero 3D robot) -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+            }
+        }
+    </script>
 
     <!-- ═══════════════════════════════════════════════════
        Design System — CSS Custom Properties
@@ -76,6 +86,7 @@
 
             /* ─── Typography ────────────────────────────────── */
             --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            --font-family-display: 'Sora', var(--font-family);
 
             --font-weight-normal: 400;
             --font-weight-medium: 500;
@@ -133,6 +144,7 @@
 
             /* ─── Layout ────────────────────────────────────── */
             --container-max: 1240px;
+            --container-gutter: var(--space-4);
 
             /* ─── Border Radius ─────────────────────────────── */
             --radius-sm: 6px;
@@ -222,7 +234,7 @@
             width: 100%;
             max-width: var(--container-max);
             margin-inline: auto;
-            padding: 0rem var(--space-6)
+            padding-inline: var(--container-gutter);
         }
 
         /* ─── Utility: Section Container ─────────────────── */
@@ -230,7 +242,7 @@
             width: 100%;
             max-width: var(--container-max);
             margin-inline: auto;
-            padding: 0rem var(--space-6);
+            padding-inline: var(--container-gutter);
             padding-top: clamp(5rem, 10vw, 7rem);
             padding-bottom: clamp(5rem, 10vw, 7rem);
             display: flex;
@@ -464,179 +476,391 @@
         }
 
         /* ─── Section: Header / Navbar ──────────────────── */
+        /* Structure from the Utomic reference: name · address · menu + contact */
         .site-header {
-            position: absolute;
+            position: fixed;
             top: 0;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 0;
             width: 100%;
             z-index: var(--z-nav);
-            background: transparent;
-            transition: all var(--transition-smooth);
+            background-color: transparent;
+            transition: background-color var(--transition-base), box-shadow var(--transition-base);
+            animation: headerIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes headerIn {
+            from {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .site-header.scrolled {
+            background-color: var(--color-white);
+            box-shadow: var(--shadow-sm);
         }
 
         .header-inner {
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 80px;
-            transition: all var(--transition-smooth);
+            gap: var(--space-6);
+            padding-block: 20px;
         }
 
-        .main-nav {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .nav-list {
-            display: flex;
-            gap: var(--space-8);
-        }
-
-        .nav-link {
-            font-size: var(--font-size-sm);
-            font-weight: var(--font-weight-semibold);
-            color: var(--color-white);
-            transition: color var(--transition-base);
-            text-decoration: none;
+        .header-brand {
+            font-family: var(--font-family-display);
+            font-size: 1.5rem;
+            font-weight: var(--font-weight-medium);
+            letter-spacing: -0.02em;
+            line-height: 1;
+            color: var(--color-dark-3);
+            white-space: nowrap;
         }
 
         .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .header-menu-btn {
             position: relative;
-            z-index: 2;
-        }
-
-        /* ─── Mobile Menu Overlay ─────────────────────── */
-        .mobile-menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--color-white);
-            cursor: pointer;
-            padding: 8px;
-            transition: color var(--transition-base);
-            z-index: 1000;
-        }
-
-        .site-header.scrolled .mobile-menu-toggle {
-            color: var(--color-text-heading);
-        }
-
-        .mobile-menu-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 10000;
-            background: var(--color-brand-primary);
+            width: 52px;
+            height: 52px;
+            flex: none;
             display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
             justify-content: center;
-            padding-left: 10vw;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .mobile-menu-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .mobile-menu-close {
-            position: absolute;
-            top: 24px;
-            right: 24px;
-            background: none;
-            border: none;
+            border-radius: var(--radius-full);
+            background-color: var(--color-dark-3);
             color: var(--color-white);
-            cursor: pointer;
-            padding: 8px;
-            transition: transform var(--transition-fast);
+            box-shadow: var(--shadow-md);
+            transition: background-color var(--transition-base);
         }
 
-        .mobile-menu-close:hover {
-            transform: scale(1.1);
+        .header-menu-btn svg {
+            width: 26px;
+            height: 26px;
+            transition: transform var(--transition-base), opacity var(--transition-base);
         }
 
-        .mobile-nav-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .header-menu-btn .icon-close {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            opacity: 0;
+            transform: rotate(-90deg);
+        }
+
+        .header-menu-btn[aria-expanded="true"] .icon-open {
+            opacity: 0;
+            transform: rotate(90deg);
+        }
+
+        .header-menu-btn[aria-expanded="true"] .icon-close {
+            opacity: 1;
+            transform: none;
+        }
+
+        @media (max-width: 575.98px) {
+            .header-contact {
+                display: none;
+            }
+        }
+
+        /* ─── Site Menu ─────────────────────────────────── */
+        /* ≥768px: dropdown card under the bar (Utomic). ≤767px: sheet unrolling from the bar
+           (ATEÏS list layout). Same markup for both. */
+        .site-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            pointer-events: none;
+            visibility: hidden;
+            transition: visibility 0s linear .35s;
+        }
+
+        .site-menu.open {
+            visibility: visible;
+            transition: visibility 0s;
+        }
+
+        .site-menu:focus {
+            outline: none;
+        }
+
+        .site-menu-inner {
             display: flex;
+            justify-content: flex-end;
+        }
+
+        .site-menu-links {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            gap: 16px;
+            width: 700px;
+            max-width: 100%;
+            margin-top: 8px;
+            padding: 30px 20px;
+            background-color: var(--color-white);
+            border: 1px solid var(--color-border);
+            border-radius: 10px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            pointer-events: auto;
+            opacity: 0;
+            transform: translateY(-10px) scale(.98);
+            transform-origin: top right;
+            transition: opacity .35s cubic-bezier(0.16, 1, 0.3, 1), transform .35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .site-menu.open .site-menu-links {
+            opacity: 1;
+            transform: none;
+        }
+
+        .site-menu-col {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex: 1 0 0;
             flex-direction: column;
             align-items: flex-start;
-            gap: 28px;
+            gap: 20px;
         }
 
-        .mobile-nav-list li {
+        .site-menu-col:last-child {
+            max-width: 243px;
+        }
+
+        .site-menu-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-medium);
+            line-height: 1.3;
+            color: var(--color-dark-3);
             opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(6px);
+            transition: opacity .3s ease, transform .3s ease, color var(--transition-base);
         }
 
-        .mobile-menu-overlay.active .mobile-nav-list li {
+        .site-menu.open .site-menu-link {
             opacity: 1;
-            transform: translateY(0);
-            transition-delay: var(--anim-delay);
+            transform: none;
+            transition-delay: var(--d, 0s), var(--d, 0s), 0s;
         }
 
-        .mobile-nav-link {
-            font-size: 28px;
-            font-weight: var(--font-weight-medium);
-            color: var(--color-white);
-            text-decoration: none;
-            transition: opacity var(--transition-base);
+        /* Utomic underline grows from the left */
+        .site-menu-link::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -2px;
+            width: 100%;
+            height: 1px;
+            background-color: currentColor;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform var(--transition-base);
         }
 
-        .mobile-nav-link:hover {
-            opacity: 0.8;
+        .site-menu-link:hover {
+            color: var(--color-brand-primary);
         }
 
-        .mobile-nav-btn {
-            background-color: var(--color-white);
-            color: var(--color-text-heading);
-            padding: 14px 28px;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: var(--font-weight-medium);
-            text-decoration: none;
-            display: inline-block;
-            transition: transform var(--transition-fast);
+        .site-menu-link:hover::after {
+            transform: scaleX(1);
         }
 
-        .mobile-nav-btn:hover {
-            transform: scale(1.05);
+        .site-menu-link .num {
+            display: none;
+            min-width: 1.6em;
+            font-size: clamp(0.8rem, 2vw, 0.95rem);
+            font-weight: var(--font-weight-normal);
+            font-variant-numeric: tabular-nums;
+            color: var(--color-text-body);
+            opacity: 0.6;
         }
 
-        /* SCROLLED PILL STATE */
-        .site-header.scrolled {
-            /* top: 20px;
-            width: 80%;
-            max-width: 1100px; 
-            padding-inline: var(--space-5); */
-
-            background-color: white;
-
-            /* background-color: rgba(255, 255, 255, 0.3) !important;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            border-radius: 50px; */
+        .site-menu-mark {
+            position: absolute;
+            left: 20px;
+            bottom: -40px;
+            z-index: 0;
+            width: 150px;
+            height: auto;
+            opacity: 0;
+            filter: grayscale(1);
+            pointer-events: none;
+            transition: opacity .35s ease;
         }
 
-        /* .site-header.scrolled .header-inner {
-            height: 70px;
-            padding-block: 10px;
-        } */
+        .site-menu.open .site-menu-mark {
+            opacity: .07;
+        }
 
-        .site-header.scrolled .brand-logo,
-        .site-header.scrolled .logo-title,
-        .site-header.scrolled .logo-subtitle,
-        .site-header.scrolled .nav-link {
-            color: var(--color-text-heading);
+        .site-menu-footer {
+            display: none;
+        }
+
+        .site-menu-link:focus-visible {
+            outline: 2px solid var(--color-brand-primary);
+            outline-offset: 3px;
+        }
+
+        /* Phone: the navbar itself grows to full height; the menu lives inside it */
+        @media (max-width: 767.98px) {
+            .site-header {
+                display: flex;
+                flex-direction: column;
+                height: var(--header-h, 92px);
+                overflow: hidden;
+                background-color: var(--color-white);
+                box-shadow: var(--shadow-sm);
+                transition: height .55s cubic-bezier(0.76, 0, 0.24, 1) .2s;
+            }
+
+            body.menu-open .site-header {
+                height: 100dvh;
+                transition: height .55s cubic-bezier(0.76, 0, 0.24, 1);
+            }
+
+            .header-inner {
+                flex: none;
+            }
+
+            .site-menu {
+                position: static;
+                flex: 1;
+                min-height: 0;
+                overflow-y: auto;
+                opacity: 0;
+                transition: opacity .25s ease, visibility 0s linear .75s;
+            }
+
+            .site-menu.open {
+                pointer-events: auto;
+                opacity: 1;
+                transition: opacity .3s ease .1s, visibility 0s;
+            }
+
+            .site-menu-inner {
+                flex-direction: column;
+                justify-content: space-between;
+                gap: var(--space-8);
+                min-height: 100%;
+                padding-block: var(--space-8);
+            }
+
+            .site-menu-links {
+                flex-direction: column;
+                gap: var(--space-5);
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                background: none;
+                border: none;
+                border-radius: 0;
+                box-shadow: none;
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+
+            .site-menu-col {
+                display: contents;
+            }
+
+            .site-menu-link {
+                font-size: clamp(1.25rem, 5vw, 1.5rem);
+                font-weight: var(--font-weight-semibold);
+                transform: translateX(-30px);
+                transition: opacity .3s ease, transform .3s ease, color var(--transition-base);
+            }
+
+            .site-menu.open .site-menu-link {
+                transform: none;
+                transition: opacity .5s ease, transform .5s ease, color var(--transition-base);
+                transition-delay: calc(var(--d, 0s) * 2 + .15s), calc(var(--d, 0s) * 2 + .15s), 0s;
+            }
+
+            .site-menu.open .site-menu-link:hover {
+                color: var(--color-dark-3);
+                transform: translateX(10px);
+                transition-delay: 0s;
+            }
+
+            .site-menu-link::after,
+            .site-menu-mark {
+                display: none;
+            }
+
+            .site-menu-link .num {
+                display: inline;
+            }
+
+            .site-menu-footer {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: flex-end;
+                justify-content: space-between;
+                gap: var(--space-4);
+                padding-top: 2rem;
+                border-top: 1px solid var(--color-border);
+                opacity: 0;
+                transform: translateY(20px);
+                transition: opacity .3s ease, transform .3s ease;
+            }
+
+            .site-menu.open .site-menu-footer {
+                opacity: 1;
+                transform: none;
+                transition: opacity .6s ease .45s, transform .6s ease .45s;
+            }
+
+            .site-menu-contact {
+                display: flex;
+                flex-direction: column;
+                gap: var(--space-2);
+                font-size: var(--font-size-sm);
+                font-weight: var(--font-weight-medium);
+                color: var(--color-text-body);
+            }
+
+            body.menu-open .at-fab {
+                display: none;
+            }
+        }
+
+        body.menu-open .site-header {
+            z-index: 10000;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .site-header,
+            body.menu-open .site-header {
+                transition: none;
+            }
+
+            .site-menu-links,
+            .site-menu-link,
+            .site-menu.open .site-menu-link,
+            .site-menu-footer {
+                transform: none !important;
+                transition-delay: 0s !important;
+            }
         }
 
         .brand-logo {
@@ -683,140 +907,271 @@
         /* ─── Section: Hero  ──────────────────────── */
         .hero-section {
             position: relative;
-            min-height: 100vh;
-            max-height: 800px;
+            min-height: 100svh;
             width: 100%;
             display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
             align-items: center;
-            background-color: var(--color-dark);
-            padding-top: clamp(6.25rem, 15vh, 12.5rem);
-            padding-bottom: clamp(3.75rem, 10vh, 7.5rem);
+            padding-top: 320px;
+            padding-bottom: 80px;
+            background-color: var(--color-dark-3);
             overflow: hidden;
         }
 
-        .hero-bg-image {
+        /* Same geometry & stops as the reference, re-coloured with the footer's color-mix technique */
+        .hero-gradient {
             position: absolute;
-            top: -15%;
-            left: 0;
-            width: 100%;
-            height: 130%;
-            object-fit: cover;
+            inset: 0;
             z-index: 0;
-            /* background: url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop') center center / cover no-repeat; */
+            background: radial-gradient(153.944% 89.968% at 50.5333% .853789%,
+                    var(--color-surface) 22.9436%,
+                    color-mix(in srgb, var(--color-brand-primary) 5%, var(--color-surface)) 28.3643%,
+                    color-mix(in srgb, var(--color-brand-primary) 15%, var(--color-surface)) 33.2604%,
+                    color-mix(in srgb, var(--color-brand-primary) 35%, var(--color-surface)) 40.2947%,
+                    color-mix(in srgb, var(--color-brand-primary) 65%, var(--color-surface)) 46.6164%,
+                    var(--color-brand-primary) 52.9953%,
+                    color-mix(in srgb, var(--color-dark-3) 25%, var(--color-brand-primary)) 60.6561%,
+                    color-mix(in srgb, var(--color-dark-3) 45%, var(--color-brand-primary)) 66.2877%,
+                    color-mix(in srgb, var(--color-dark-3) 70%, var(--color-brand-primary)) 72.7383%,
+                    var(--color-dark-3) 89.9086%);
         }
 
-        .hero-overlay-content {
+        /* Animated aurora (WebGL "Wave Gradient" shader, see script) */
+        .hero-aurora {
             position: absolute;
             inset: 0;
             z-index: 1;
-            background: linear-gradient(90deg, rgba(0, 0, 0, 0.68) 0%, rgba(0, 0, 0, 0.09) 66%);
+            opacity: .2;
             pointer-events: none;
         }
 
-        .hero-content-wrapper {
+        .hero-aurora canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .hero-graphic {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            width: clamp(320px, 42vw, 520px);
+            aspect-ratio: 1;
+            pointer-events: none;
+            user-select: none;
+            opacity: 0;
+            animation: heroGraphicIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) .35s forwards;
+        }
+
+        @keyframes heroGraphicIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, 60px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        .hero-graphic-poster,
+        .hero-graphic canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity var(--transition-slow);
+        }
+
+        .hero-graphic canvas {
+            opacity: 0;
+        }
+
+        .hero-graphic.is-ready canvas {
+            opacity: 1;
+        }
+
+        .hero-graphic.is-ready .hero-graphic-poster {
+            opacity: 0;
+        }
+
+        .hero-container {
             position: relative;
             z-index: 2;
-            display: flex;
-            flex-direction: column;
-            gap: 80px;
+            container-type: inline-size;
         }
 
-        .hero-top-content {
+        .hero-content {
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            gap: clamp(1.5rem, 4vw, 2.5rem);
+            gap: 160px;
         }
 
-        .hero-text-wrap {
+        .hero-row {
             display: flex;
-            flex-direction: column;
-            gap: 28px;
-            align-items: flex-start;
-        }
-
-        .hero-badge {
-            display: inline-flex;
+            justify-content: space-between;
             align-items: center;
-            padding: 8px 16px;
-            border-radius: 67px;
-            border: 1px solid var(--color-white);
-            color: var(--color-white);
-            font-size: var(--font-size-sm);
-            font-weight: var(--font-weight-semibold);
-            opacity: 0;
-            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            animation-delay: 0.1s;
-        }
-
-        .hero-title {
-            font-size: clamp(2.5rem, 2.7vw + 1.95rem, 4rem);
-            font-weight: var(--font-weight-semibold);
-            letter-spacing: var(--letter-spacing-tight);
-            line-height: 1.1em;
-            color: var(--color-white);
-            max-width: 720px;
-            margin: 0;
-            display: flex;
-            flex-wrap: wrap;
-            column-gap: 0.25em;
-            row-gap: 0;
-        }
-
-        .hero-title span {
-            display: inline-block;
-            opacity: 0;
-            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        /* Stagger the headline spans */
-        .hero-title span:nth-child(1) {
-            animation-delay: 0.20s;
-        }
-
-        .hero-title span:nth-child(2) {
-            animation-delay: 0.25s;
-        }
-
-        .hero-title span:nth-child(3) {
-            animation-delay: 0.30s;
-        }
-
-        .hero-title span:nth-child(4) {
-            animation-delay: 0.35s;
-        }
-
-        .hero-title span:nth-child(5) {
-            animation-delay: 0.40s;
-        }
-
-        .hero-title span:nth-child(6) {
-            animation-delay: 0.45s;
-        }
-
-        .hero-title span:nth-child(7) {
-            animation-delay: 0.50s;
+            gap: var(--space-8);
         }
 
         .hero-subtitle {
-            font-size: clamp(1rem, 0.23vw + 0.95rem, 1.125rem);
-            line-height: 1.4rem;
-            color: var(--color-surface);
-            max-width: 590px;
+            max-width: 440px;
             margin: 0;
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-medium);
+            line-height: var(--line-height-snug);
+            letter-spacing: -0.01em;
+            color: var(--color-white);
             opacity: 0;
-            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            animation-delay: 0.4s;
+            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) .7s forwards;
         }
 
-        .hero-actions {
-            margin-top: 12px;
+        .hero-card {
             display: flex;
-            flex-wrap: wrap;
-            gap: clamp(0.75rem, 2vw, 1rem);
+            flex-direction: column;
+            gap: 50px;
+            width: 350px;
+            max-width: 100%;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            background-color: rgba(255, 255, 255, .1);
+            backdrop-filter: blur(7px);
+            -webkit-backdrop-filter: blur(7px);
+            color: var(--color-white);
+            transition: background-color var(--transition-base);
+            opacity: 0;
+            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) .8s forwards;
+        }
+
+        .hero-card:hover {
+            background-color: rgba(255, 255, 255, .16);
+        }
+
+        .hero-card-text {
+            margin: 0;
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            line-height: var(--line-height-normal);
+        }
+
+        .hero-card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hero-card-value {
+            font-size: 1.75rem;
+            font-weight: var(--font-weight-medium);
+            line-height: 1.28;
+        }
+
+        .hero-card-arrow {
+            width: 40px;
+            height: 40px;
+            flex: none;
+            transition: transform var(--transition-base);
+        }
+
+        .hero-card:hover .hero-card-arrow {
+            transform: rotate(45deg);
+        }
+
+        .hero-brand {
+            margin: 0;
+            text-align: center;
+            white-space: nowrap;
+            text-transform: uppercase;
+            font-family: var(--font-family-display);
+            /* fills the content width exactly ("FIRST EMIRATES" in Sora 400 ≈ 8.26em wide — Utomic's title font) */
+            font-size: calc((min(100vw, var(--container-max)) - 2 * var(--container-gutter)) / 8.26);
+            font-size: calc(100cqw / 8.26); /* content box of .hero-container, scrollbar-safe */
+            font-weight: var(--font-weight-normal);
+            line-height: .9;
+            letter-spacing: 0;
+            color: var(--color-white);
+        }
+
+        .hero-brand span span {
+            display: inline-block;
             opacity: 0;
             animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            animation-delay: 0.5s;
+            animation-delay: calc(.1s + var(--i) * 40ms);
+        }
+
+        @media (max-width: 1199.98px) {
+            .hero-section {
+                padding-top: 180px;
+                padding-bottom: 60px;
+            }
+
+            .hero-subtitle {
+                font-size: 1.375rem;
+            }
+
+            .hero-card-value {
+                font-size: var(--font-size-2xl);
+            }
+        }
+
+        @media (max-width: 809.98px) {
+            .hero-section {
+                justify-content: flex-start;
+                gap: 50px;
+                padding-top: 150px;
+                padding-bottom: 0;
+            }
+
+            .hero-gradient {
+                background: radial-gradient(150% 30% at 50.5333% .853789%,
+                        var(--color-surface) 22.9436%,
+                        color-mix(in srgb, var(--color-brand-primary) 5%, var(--color-surface)) 28.3643%,
+                        color-mix(in srgb, var(--color-brand-primary) 15%, var(--color-surface)) 33.2604%,
+                        color-mix(in srgb, var(--color-brand-primary) 35%, var(--color-surface)) 40.2947%,
+                        color-mix(in srgb, var(--color-brand-primary) 65%, var(--color-surface)) 46.6164%,
+                        var(--color-brand-primary) 52.9953%,
+                        color-mix(in srgb, var(--color-dark-3) 25%, var(--color-brand-primary)) 60.6561%,
+                        color-mix(in srgb, var(--color-dark-3) 45%, var(--color-brand-primary)) 66.2877%,
+                        color-mix(in srgb, var(--color-dark-3) 70%, var(--color-brand-primary)) 72.7383%,
+                        var(--color-dark-3) 89.9086%);
+            }
+
+            .hero-container {
+                order: 2;
+            }
+
+            .hero-content {
+                gap: 30px;
+            }
+
+            .hero-brand {
+                order: -1;
+                text-align: left;
+            }
+
+            .hero-row {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .hero-subtitle,
+            .hero-card {
+                max-width: none;
+                width: 100%;
+            }
+
+            .hero-graphic {
+                order: 3;
+                position: relative;
+                left: auto;
+                width: 100%;
+                transform: none;
+                animation-name: slideUpFade;
+            }
         }
 
         /* Review Widget */
@@ -1052,7 +1407,7 @@
 
         /* ─── Section: Service ─────────────────────────── */
         .services-section {
-            background-color: var(--color-dark-3);
+            background-color: var(--color-black);
             color: var(--color-white);
         }
 
@@ -1269,7 +1624,7 @@
         }
 
         .service-pill {
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: var(--radius-2xl);
             font-size: var(--font-size-xs);
@@ -1963,25 +2318,6 @@
                 margin-bottom: 0;
             }
 
-            /* --- Header / Navbar --- */
-
-            .site-header.scrolled {
-                width: 90%;
-            }
-
-            .main-nav,
-            .header-actions {
-                display: none;
-            }
-
-            .mobile-menu-toggle {
-                display: block;
-            }
-
-            .nav-list {
-                gap: var(--space-6);
-            }
-
             /* --- Services --- */
             .service-item {
                 grid-template-columns: 0.2fr 1fr;
@@ -2113,6 +2449,480 @@
 
         /* Mobile Breakpoint (max-width: 809.98px) */
         @media (max-width: 809.98px) {}
+
+        /* ─── Chatbot ───────────────────────────────── */
+        /* Launcher — shape from .btn .btn-lg, brand gradient like .at-head */
+        .at-fab {
+            position: fixed;
+            right: 22px;
+            bottom: 22px;
+            z-index: 999;
+            gap: var(--space-3);
+            padding-left: var(--space-5);
+            background: linear-gradient(135deg,
+                    var(--color-brand-primary) 0%,
+                    var(--color-brand-primary-hv) 60%,
+                    color-mix(in srgb, var(--color-dark-3) 40%, var(--color-brand-primary)) 100%);
+            color: var(--color-white);
+            transition: transform var(--transition-base), box-shadow var(--transition-base);
+        }
+
+        .at-fab:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .at-fab svg {
+            width: 20px;
+            height: 20px
+        }
+
+        .at-fab .at-dot {
+            position: absolute;
+            top: 9px;
+            left: 13px;
+            width: 9px;
+            height: 9px;
+            border-radius: var(--radius-full);
+            background: var(--color-success);
+            border: 2px solid var(--color-brand-primary);
+            animation: at-pulse 2.4s infinite
+        }
+
+        @keyframes at-pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 200, 150, .55)
+            }
+
+            70% {
+                box-shadow: 0 0 0 8px rgba(0, 200, 150, 0)
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 200, 150, 0)
+            }
+        }
+
+        .at-fab.hide {
+            display: none
+        }
+
+        /* Panel */
+        .at-chat {
+            position: fixed;
+            right: 22px;
+            bottom: 22px;
+            z-index: 9999;
+            width: 390px;
+            max-width: calc(100vw - 24px);
+            height: 600px;
+            max-height: calc(100svh - 44px);
+            display: none;
+            flex-direction: column;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            background: var(--color-white);
+            border: 1px solid var(--color-border);
+            box-shadow: var(--shadow-lg);
+            color: var(--color-dark-3);
+            font-family: var(--font-family)
+        }
+
+        .at-chat.open {
+            display: flex;
+            animation: at-chat-in .5s cubic-bezier(0.16, 1, 0.5, 1)
+        }
+
+        @keyframes at-chat-in {
+            from {
+                opacity: 0;
+                transform: translateY(24px) scale(.97)
+            }
+
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+
+        /* Header — brand gradient */
+        .at-head {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-4) var(--space-5);
+            background: linear-gradient(135deg,
+                    var(--color-brand-primary) 0%,
+                    var(--color-brand-primary-hv) 60%,
+                    color-mix(in srgb, var(--color-dark-3) 40%, var(--color-brand-primary)) 100%);
+            color: var(--color-white)
+        }
+
+        .at-ava {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background: rgba(255, 255, 255, .12);
+            border: 1px solid rgba(255, 255, 255, .25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            flex: none;
+            color: var(--color-white)
+        }
+
+        .at-ava svg {
+            width: 20px;
+            height: 20px
+        }
+
+        .at-ava::after {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            right: -1px;
+            width: 11px;
+            height: 11px;
+            border-radius: var(--radius-full);
+            background: var(--color-success);
+            border: 2px solid var(--color-brand-primary);
+            animation: at-pulse 2.4s infinite
+        }
+
+        .at-head-t {
+            display: flex;
+            flex-direction: column;
+            gap: 3px
+        }
+
+        .at-head-t b {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            white-space: nowrap
+        }
+
+        .at-head-t span {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            color: rgba(255, 255, 255, .75);
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .at-head-t .at-ai {
+            font-size: .6rem;
+            font-weight: var(--font-weight-semibold);
+            letter-spacing: .08em;
+            padding: 2px 8px;
+            border-radius: var(--radius-2xl);
+            background: rgba(255, 255, 255, .12);
+            border: 1px solid rgba(255, 255, 255, .25);
+            color: var(--color-white)
+        }
+
+        .at-x {
+            margin-left: auto;
+            width: 40px;
+            height: 40px;
+            flex: none;
+            border-radius: var(--radius-full);
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, .25);
+            color: var(--color-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-base)
+        }
+
+        .at-x:hover {
+            background: var(--color-white);
+            border-color: var(--color-white);
+            color: var(--color-brand-primary);
+            transform: rotate(90deg)
+        }
+
+        .at-x svg {
+            width: 16px;
+            height: 16px
+        }
+
+        /* Messages */
+        .at-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-5) var(--space-4);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            background: var(--color-white);
+            scrollbar-width: thin
+        }
+
+        .at-body::-webkit-scrollbar {
+            width: 6px
+        }
+
+        .at-body::-webkit-scrollbar-thumb {
+            background: var(--color-surface-2);
+            border-radius: 3px
+        }
+
+        .at-msg {
+            max-width: 84%;
+            padding: 11px 15px;
+            border-radius: var(--radius-lg);
+            font-size: var(--font-size-sm);
+            line-height: var(--line-height-normal);
+            white-space: pre-line
+        }
+
+        .at-msg.bot {
+            align-self: flex-start;
+            background: var(--color-surface);
+            border-bottom-left-radius: var(--radius-sm);
+            color: var(--color-dark)
+        }
+
+        .at-msg.bot b {
+            color: var(--color-dark-3);
+            font-weight: var(--font-weight-semibold)
+        }
+
+        .at-msg.user {
+            align-self: flex-end;
+            background: var(--color-dark-3);
+            color: var(--color-white);
+            border-bottom-right-radius: var(--radius-sm)
+        }
+
+        /* Quick-reply chips — muted; .hot = brand highlight */
+        .at-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            align-self: flex-start;
+            max-width: 92%
+        }
+
+        .at-chip {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            color: var(--color-dark-3);
+            font-family: inherit;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            padding: .6rem 1rem;
+            border-radius: var(--radius-2xl);
+            cursor: pointer;
+            transition: all var(--transition-base)
+        }
+
+        .at-chip:hover {
+            background: var(--color-surface-2);
+            transform: translateY(-1px)
+        }
+
+        .at-chip.hot {
+            background: color-mix(in srgb, var(--color-brand-primary) 8%, var(--color-white));
+            border-color: var(--color-brand-primary);
+            color: var(--color-brand-primary)
+        }
+
+        .at-chip.hot:hover {
+            background: color-mix(in srgb, var(--color-brand-primary) 14%, var(--color-white))
+        }
+
+        /* Action buttons — inherit look from .btn */
+        .at-actions {
+            display: flex;
+            gap: var(--space-2);
+            align-self: flex-start;
+            flex-wrap: wrap
+        }
+
+        .at-act {
+            gap: var(--space-2)
+        }
+
+        .at-act:hover {
+            transform: translateY(-2px)
+        }
+
+        .at-act.wa {
+            background-color: #1FAF5A;
+            color: var(--color-white)
+        }
+
+        .at-act.wa:hover {
+            background-color: #189a4e
+        }
+
+        .at-act svg {
+            width: 15px;
+            height: 15px
+        }
+
+        .at-typing {
+            align-self: flex-start;
+            display: flex;
+            gap: 5px;
+            padding: 14px 18px;
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            border-bottom-left-radius: var(--radius-sm)
+        }
+
+        .at-typing i {
+            width: 7px;
+            height: 7px;
+            border-radius: var(--radius-full);
+            background: var(--color-muted);
+            animation: at-b 1.2s infinite
+        }
+
+        .at-typing i:nth-child(2) {
+            animation-delay: .18s
+        }
+
+        .at-typing i:nth-child(3) {
+            animation-delay: .36s
+        }
+
+        @keyframes at-b {
+
+            0%,
+            60%,
+            100% {
+                transform: none;
+                opacity: .4
+            }
+
+            30% {
+                transform: translateY(-5px);
+                opacity: 1
+            }
+        }
+
+        /* Composer */
+        .at-foot {
+            display: flex;
+            gap: var(--space-2);
+            padding: var(--space-3) var(--space-4);
+            border-top: 1px solid var(--color-border);
+            background: var(--color-white)
+        }
+
+        .at-in {
+            flex: 1;
+            min-width: 0;
+            background: var(--color-white);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-3xl);
+            padding: .75rem 1.1rem;
+            font-family: inherit;
+            font-size: var(--font-size-sm);
+            color: var(--color-dark-3);
+            transition: border-color var(--transition-base);
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none
+        }
+
+        .at-in:focus {
+            border-color: var(--color-dark-3)
+        }
+
+        .at-in::placeholder {
+            color: var(--color-muted)
+        }
+
+        .at-send {
+            width: 44px;
+            height: 44px;
+            flex: none;
+            border: none;
+            border-radius: var(--radius-full);
+            background: var(--color-dark-3);
+            color: var(--color-white);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-base)
+        }
+
+        .at-send:hover {
+            background: var(--color-brand-primary);
+            transform: translateY(-2px)
+        }
+
+        .at-send svg {
+            width: 16px;
+            height: 16px
+        }
+
+        .at-note {
+            font-size: .68rem;
+            font-weight: var(--font-weight-medium);
+            color: var(--color-muted);
+            text-align: center;
+            padding: 0 var(--space-4) var(--space-3);
+            background: var(--color-white)
+        }
+
+        @media (max-width: 640px) {
+            .at-chat {
+                width: 100%;
+                height: 100%;
+                max-width: none;
+                max-height: none;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                border: none;
+                border-radius: 0;
+            }
+        }
+
+        /* RTL Specific Overrides */
+        html[dir="rtl"] .at-fab,
+        html[dir="rtl"] .at-chat {
+            left: 20px;
+            right: auto;
+        }
+
+        @media (max-width: 640px) {
+            html[dir="rtl"] .at-chat {
+                left: 0;
+                right: 0;
+            }
+        }
+
+        html[dir="rtl"] .at-x {
+            margin-left: 0;
+            margin-right: auto;
+        }
+
+        html[dir="rtl"] .at-msg.user {
+            align-self: flex-start;
+            border-bottom-right-radius: var(--radius-lg);
+            border-bottom-left-radius: var(--radius-sm);
+        }
+
+        html[dir="rtl"] .at-msg.bot {
+            align-self: flex-end;
+            border-bottom-left-radius: var(--radius-lg);
+            border-bottom-right-radius: var(--radius-sm);
+        }
     </style>
 
 </head>
@@ -2143,125 +2953,86 @@
     <!-- ═══════════════════════════════════════════════════
        1. HEADER / NAVBAR
   ═══════════════════════════════════════════════════ -->
-    <header class="container site-header" id="siteHeader">
-        <div class="header-inner">
-            <!-- Logo -->
-            <a href="/" class="brand-logo">
-                <img src="./images/logo.png" alt="First Emirates Logo" class="brand-logo-img">
-                <div class="brand-logo-text">
-                    <span class="logo-title">First Emirates</span>
-                    <!-- <span class="logo-subtitle">Computers and Technical Services</span> -->
+    <header class="site-header" id="siteHeader">
+        <div class="container header-inner">
+            <a href="#home" class="header-brand">First Emirates</a>
+
+            <div class="header-actions">
+                <button class="header-menu-btn" id="mobileMenuToggle" aria-label="Open menu"
+                    aria-controls="mobileMenuOverlay" aria-expanded="false">
+                    <svg class="icon-open" viewBox="0 0 27 27" fill="none" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M4.05 9.45c0-.745.604-1.35 1.35-1.35h16.2a1.35 1.35 0 1 1 0 2.7H5.4a1.35 1.35 0 0 1-1.35-1.35m0 8.1c0-.745.604-1.35 1.35-1.35h16.2a1.35 1.35 0 1 1 0 2.7H5.4a1.35 1.35 0 0 1-1.35-1.35" clip-rule="evenodd" /></svg>
+                    <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                </button>
+                <a href="#contact" class="btn btn-dark btn-lg header-contact">
+                    <div class="hover-roll-text" data-text="Contact us"><span>Contact us</span></div>
+                </a>
+            </div>
+        </div>
+        <!-- Menu: dropdown card (≥768px) / sheet from the navbar (phone) -->
+        <div class="site-menu" id="mobileMenuOverlay" aria-hidden="true" tabindex="-1">
+            <div class="container site-menu-inner">
+                <nav class="site-menu-links" aria-label="Main">
+                    <img class="site-menu-mark" src="./images/logo.png" alt="" aria-hidden="true">
+                    <div class="site-menu-col">
+                        <a class="site-menu-link" href="#home" style="--d:0.00s"><span class="num">01</span>Home</a>
+                        <a class="site-menu-link" href="#about" style="--d:0.03s"><span class="num">02</span>About</a>
+                    </div>
+                    <div class="site-menu-col">
+                        <a class="site-menu-link" href="#services" style="--d:0.06s"><span class="num">03</span>Services</a>
+                        <a class="site-menu-link" href="#why-us" style="--d:0.09s"><span class="num">04</span>Why Choose Us</a>
+                        <a class="site-menu-link" href="#reviews" style="--d:0.12s"><span class="num">05</span>Testimonials</a>
+                    </div>
+                    <div class="site-menu-col">
+                        <a class="site-menu-link" href="#faq" style="--d:0.15s"><span class="num">06</span>FAQ</a>
+                        <a class="site-menu-link" href="#contact" style="--d:0.18s"><span class="num">07</span>Contact</a>
+                    </div>
+                </nav>
+                <div class="site-menu-footer">
+                    <div class="site-menu-contact">
+                        <a href="mailto:sales@firstemirate.com">sales@firstemirate.com</a>
+                        <a href="tel:+97125538526">+971 2 553 8526</a>
+                    </div>
+                    <a href="#contact" class="btn btn-dark btn-lg site-menu-cta">
+                        <div class="hover-roll-text" data-text="Get a Quote ↗"><span>Get a Quote ↗</span></div>
+                    </a>
                 </div>
-            </a>
-
-            <!-- Navigation -->
-            <nav class="main-nav">
-                <ul class="nav-list">
-                    <li><a href="#about" class="nav-link hover-roll-text" data-text="About Us"><span>About us</span></a>
-                    </li>
-                    <li><a href="#services" class="nav-link hover-roll-text"
-                            data-text="Services"><span>Services</span></a>
-                    </li>
-                    <li><a href="#solutions" class="nav-link hover-roll-text"
-                            data-text="Solutions"><span>Solutions</span></a></li>
-                    <li><a href="#projects" class="nav-link hover-roll-text"
-                            data-text="Projects"><span>Projects</span></a></li>
-                </ul>
-            </nav>
-
-            <!-- CTA -->
-            <a href="#contact" class="btn btn-primary header-actions">
-                <div class="hover-roll-text" data-text="Get a Quote" style="color: inherit;"><span>Get a
-                        Quote</span>
-                </div>
-            </a>
-
-            <!-- Hamburger Toggle (Mobile) -->
-            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle Mobile Menu">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="4" y1="9" x2="20" y2="9"></line>
-                    <line x1="4" y1="16" x2="20" y2="16"></line>
-                </svg>
-            </button>
+            </div>
         </div>
     </header>
-
-    <!-- ═══════════════════════════════════════════════════
-       1B. MOBILE MENU OVERLAY
-  ═══════════════════════════════════════════════════ -->
-    <div class="mobile-menu-overlay" id="mobileMenuOverlay">
-        <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close Mobile Menu">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"
-                stroke-linecap="round" stroke-linejoin="round">
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-                <line x1="6" y1="18" x2="18" y2="6"></line>
-            </svg>
-        </button>
-        <div class="mobile-menu-inner">
-            <ul class="mobile-nav-list">
-                <li style="--anim-delay: 0.1s;"><a href="#about" class="mobile-nav-link">About Us</a></li>
-                <li style="--anim-delay: 0.2s;"><a href="#services" class="mobile-nav-link">Services</a></li>
-                <li style="--anim-delay: 0.3s;"><a href="#solutions" class="mobile-nav-link">Solutions</a></li>
-                <li style="--anim-delay: 0.4s;"><a href="#projects" class="mobile-nav-link">Projects</a></li>
-                <li style="--anim-delay: 0.5s;"><a href="#contact" class="mobile-nav-btn"
-                        style="margin-top: 24px;">Contact Now</a></li>
-            </ul>
-        </div>
-    </div>
 
     <!-- ═══════════════════════════════════════════════════
        2. HERO SECTION
   ═══════════════════════════════════════════════════ -->
     <section class="hero-section" id="home">
-        <!-- The Background & Dual Overlays -->
-        <div class="hero-bg-image"></div>
-        <div class="hero-overlay-content"></div>
+        <div class="hero-gradient"></div>
+        <div class="hero-aurora" aria-hidden="true"><canvas id="heroAurora"></canvas></div>
+        <div class="hero-graphic" aria-hidden="true">
+            <img class="hero-graphic-poster" src="./images/hero/robot-poster.png" alt="">
+            <canvas id="heroRobot"></canvas>
+        </div>
 
-        <!-- The Content Container -->
-        <div class="container hero-content-wrapper">
-            <div class="hero-top-content">
-                <div class="hero-text-wrap">
-                    <!-- Pill Badge -->
-                    <div class="hero-badge">
-                        Serving the UAE since 2011
-                    </div>
+        <div class="container hero-container">
+            <div class="hero-content">
+                <div class="hero-row">
+                    <p class="hero-subtitle">Your All in One IT Solution Partner, delivering IT infrastructure,
+                        security surveillance, networking and biometric solutions across the UAE.</p>
 
-                    <!-- Staggered Headline -->
-                    <h1 class="hero-title">
-                        <span>Your</span> <span>All</span> <span>in</span> <span>One</span>
-                        <span class="text-gradient">IT Solution</span>
-                        <span>Partner</span>
-                    </h1>
-
-                    <!-- Description -->
-                    <p class="hero-subtitle">
-                        Comprehensive IT infrastructure, security surveillance, networking, and biometric solutions
-                        tailored
-                        to your business needs without compromising on quality or cost-effectiveness.
-                    </p>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="hero-actions">
-                    <a href="#contact" class="btn btn-primary">
-                        <div class="hover-roll-text" data-text="Request an Estimate"><span>Request an Estimate</span>
-                        </div>
-                    </a>
-                    <a href="tel:+97125538526" class="btn btn-secondary">
-                        <div class="btn-icon">
-                            <!-- SVG Phone Icon -->
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <a href="#about" class="hero-card">
+                        <p class="hero-card-text">Trusted IT &amp; security partner for businesses across the UAE since
+                            2011</p>
+                        <div class="hero-card-bottom">
+                            <span class="hero-card-value">15+</span>
+                            <svg class="hero-card-arrow" viewBox="0 0 40 40" fill="none" aria-hidden="true">
                                 <path
-                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
-                                </path>
+                                    d="M26.8833 15.8716L12.5383 30.2166L10.1816 27.86L24.525 13.515H11.8833V10.1816H30.2166V28.515H26.8833V15.8716Z"
+                                    fill="currentColor" />
                             </svg>
                         </div>
-                        <div class="hover-roll-text" data-text="Call Now" style="color: inherit;"><span>Call Now</span>
-                        </div>
                     </a>
                 </div>
+
+                <h1 class="hero-brand" aria-label="First Emirates"><span aria-hidden="true" style="display:contents"><span style="--i:0">F</span><span style="--i:1">i</span><span style="--i:2">r</span><span style="--i:3">s</span><span style="--i:4">t</span><span style="--i:5">&nbsp;</span><span style="--i:6">E</span><span style="--i:7">m</span><span style="--i:8">i</span><span style="--i:9">r</span><span style="--i:10">a</span><span style="--i:11">t</span><span style="--i:12">e</span><span style="--i:13">s</span></span></h1>
             </div>
         </div>
     </section>
@@ -2475,7 +3246,7 @@
                                 <div>
                                     <div class="service-details-expanded">
                                         <div class="service-img-wrapper">
-                                            <img src="https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&q=80&w=400&h=300"
+                                            <img src="./images/services/security.svg"
                                                 alt="Security Solutions">
                                         </div>
                                         <div class="service-text-block">
@@ -2519,7 +3290,7 @@
                                 <div>
                                     <div class="service-details-expanded">
                                         <div class="service-img-wrapper">
-                                            <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=400&h=300"
+                                            <img src="./images/services/it.svg"
                                                 alt="IT Solutions">
                                         </div>
                                         <div class="service-text-block">
@@ -2563,7 +3334,7 @@
                                 <div>
                                     <div class="service-details-expanded">
                                         <div class="service-img-wrapper">
-                                            <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=400&h=300"
+                                            <img src="./images/services/network.svg"
                                                 alt="Network Solutions">
                                         </div>
                                         <div class="service-text-block">
@@ -2606,7 +3377,7 @@
                                 <div>
                                     <div class="service-details-expanded">
                                         <div class="service-img-wrapper">
-                                            <img src="https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?auto=format&fit=crop&q=80&w=400&h=300"
+                                            <img src="./images/services/infrastructure.svg"
                                                 alt="IT Infrastructure">
                                         </div>
                                         <div class="service-text-block">
@@ -2648,7 +3419,7 @@
                                 <div>
                                     <div class="service-details-expanded">
                                         <div class="service-img-wrapper">
-                                            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=400&h=300"
+                                            <img src="./images/services/access.svg"
                                                 alt="Access Control & Biometrics">
                                         </div>
                                         <div class="service-text-block">
@@ -2690,7 +3461,7 @@
                                 <div>
                                     <div class="service-details-expanded">
                                         <div class="service-img-wrapper">
-                                            <img src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&q=80&w=400&h=300"
+                                            <img src="./images/services/amc.svg"
                                                 alt="Annual Maintenance Contracts (AMC)">
                                         </div>
                                         <div class="service-text-block">
@@ -3355,52 +4126,111 @@
         </div>
     </section>
 
+    <!-- ============ CHATBOT FAB ============ -->
+    <button class="at-fab btn btn-lg" id="atFab" aria-label="Chat with First Emirates assistant">
+      <span class="at-dot" aria-hidden="true"></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M21 12a8 8 0 0 1-8 8H5.5L3 21.5V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8Z" />
+        <circle cx="9.5" cy="12" r="0.9" fill="currentColor" stroke="none" />
+        <circle cx="13" cy="12" r="0.9" fill="currentColor" stroke="none" />
+        <circle cx="16.5" cy="12" r="0.9" fill="currentColor" stroke="none" />
+      </svg>
+      <div class="hover-roll-text" data-text="Ask us"><span>Ask us</span></div>
+    </button>
+
+    <div class="at-chat" id="atChat" role="dialog" aria-label="First Emirates assistant chat">
+      <div class="at-head">
+        <div class="at-ava">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M3 10v4M7 6v12M11 3v18M15 6v12M19 10v4" />
+          </svg>
+        </div>
+        <div class="at-head-t">
+          <b>First Emirates Assistant <span class="at-ai">AI</span></b>
+          <span>Online · answers from our company profile</span>
+        </div>
+        <button class="at-x" id="atClose" aria-label="Close chat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M6 6l12 12M18 6 6 18" />
+          </svg>
+        </button>
+      </div>
+      <div class="at-body" id="atBody"></div>
+      <div class="at-foot">
+        <input class="at-in" id="atIn" type="text" placeholder="Ask about CCTV, networking, access control…" autocomplete="off" aria-label="Type your question">
+        <button class="at-send" id="atSend" aria-label="Send message">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M22 2 11 13M22 2l-7 20-4-9-9-4Z" />
+          </svg>
+        </button>
+      </div>
+      <div class="at-note">AI assistant — for a live agent, tap "Talk to a human" any time.</div>
+    </div>
+
     <!-- Scripts -->
     <script>
         // Navbar Scroll Effect
         const header = document.getElementById('siteHeader');
 
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-        });
+        function updateHeader() {
+            header.classList.toggle('scrolled', window.scrollY > 50);
+        }
 
-        // Mobile Menu Toggle
+        window.addEventListener('scroll', updateHeader, { passive: true });
+        updateHeader();
+
+        // Site Menu (dropdown card on desktop, sheet from the navbar on phones)
         const mobileToggle = document.getElementById('mobileMenuToggle');
-        const mobileClose = document.getElementById('mobileMenuClose');
         const mobileOverlay = document.getElementById('mobileMenuOverlay');
-        const mobileLinks = document.querySelectorAll('.mobile-nav-link, .mobile-menu-overlay .btn-primary');
+        const mobileLinks = mobileOverlay.querySelectorAll('.site-menu-link, .site-menu-cta');
+        const phoneQuery = window.matchMedia('(max-width: 767.98px)');
+
+        function setHeaderHeight() {
+            // closed bar height (the header itself grows when the phone menu is open)
+            document.documentElement.style.setProperty('--header-h', `${header.querySelector('.header-inner').offsetHeight}px`);
+        }
 
         function openMobileMenu() {
-            mobileOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevent scrolling when menu is open
+            setHeaderHeight();
+            mobileOverlay.classList.add('open');
+            mobileOverlay.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('menu-open');
+            mobileToggle.setAttribute('aria-expanded', 'true');
+            mobileToggle.setAttribute('aria-label', 'Close menu');
+            if (phoneQuery.matches) document.body.style.overflow = 'hidden'; // Lock scroll for the full sheet
+            mobileOverlay.focus({ preventScroll: true });
         }
 
-        function closeMobileMenu() {
-            mobileOverlay.classList.remove('active');
+        function closeMobileMenu(returnFocus) {
+            if (!mobileOverlay.classList.contains('open')) return;
+            mobileOverlay.classList.remove('open');
+            mobileOverlay.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('menu-open');
+            mobileToggle.setAttribute('aria-expanded', 'false');
+            mobileToggle.setAttribute('aria-label', 'Open menu');
             document.body.style.overflow = '';
+            if (returnFocus) mobileToggle.focus({ preventScroll: true });
         }
 
-        mobileToggle.addEventListener('click', openMobileMenu);
-        mobileClose.addEventListener('click', closeMobileMenu);
+        mobileToggle.addEventListener('click', () => {
+            mobileOverlay.classList.contains('open') ? closeMobileMenu(true) : openMobileMenu();
+        });
 
-        // Close menu when a link is clicked
+        // Close on link click, Escape, or a click outside the header/card
         mobileLinks.forEach(link => {
-            link.addEventListener('click', closeMobileMenu);
+            link.addEventListener('click', () => closeMobileMenu(false));
         });
-
-        /* ─── Hero Background Parallax ─── */
-        const heroBg = document.querySelector('.hero-bg-image');
-        window.addEventListener('scroll', () => {
-            if (heroBg) {
-                const scrollY = window.scrollY;
-                // Move down at half speed
-                heroBg.style.transform = `translateY(${scrollY * 0.4}px)`;
-            }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeMobileMenu(true);
         });
+        document.addEventListener('click', (e) => {
+            if (!phoneQuery.matches && !header.contains(e.target)) closeMobileMenu(false);
+        });
+        window.addEventListener('resize', setHeaderHeight);
+        setHeaderHeight();
 
         /* ─── Stats Number Counter Animation ─── */
         const statElements = document.querySelectorAll('.stat-number-val');
@@ -3471,6 +4301,673 @@
                 item.classList.toggle('active');
             });
         });
+
+        /* ===================== CHATBOT JS ===================== */
+        (function () {
+          var WA = "https://wa.me/971555184464?text=" + encodeURIComponent("Hello First Emirates Computers, I'd like to know more about your IT and security solutions.");
+          var AT_AGENT_URL = ""; // set to the First Emirates agent webhook URL (empty = local KB only)
+          var AT_SESSION = "web-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+          /* ===================== CHATBOT KB ===================== */
+          function atFmt(s) {
+            s = String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            return s.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+          }
+          // Source: docs/First_Emirates_Computers_Master_Knowledge_Base_FINAL.md
+          // Grounding: no invented prices, SLAs, 24/7 claims, certifications, leaders, clients or dealerships.
+          var C = {
+            services: "Our services", cctv: "CCTV & security", net: "Networking & Wi-Fi", cabling: "Structured cabling",
+            firewall: "Firewalls & VPN", access: "Access control", aitime: "AiTIME attendance", gates: "Gates & barriers",
+            alarms: "Intercoms & alarms", eas: "Retail anti-theft", phones: "IP telephony", av: "Meeting rooms & AV",
+            servers: "Servers", computers: "Laptops & desktops", printers: "Printers & toners", pos: "POS systems",
+            power: "Solar & UPS", storage: "Data storage", support: "IT support", amc: "Maintenance contracts (AMC)",
+            brands: "Our brands", projects: "Our projects", industries: "Industries we serve",
+            branches: "Branches & contact", contact: "Contact details", about: "About us",
+            quote: "Request a quote", human: "Talk to a human"
+          };
+          var HUMAN = {
+            t: "You're one tap away from our sales team. Choose how you'd like to connect:", act: true,
+            chips: [C.services, C.quote]
+          };
+          var KB = [
+            {
+              k: /^\s*(hi|hello|hey|hiya|salam|assalam(u|o)? ?alaikum|marhaba|good (morning|afternoon|evening))\b[\s!.,]*$/i,
+              t: "Hello! Welcome to <b>First Emirates Computers</b> — an Abu Dhabi-based IT and security system integrator serving the UAE since 2011.\nWhat can I help you with today?",
+              chips: [C.services, C.cctv, C.branches, C.human]
+            },
+            { k: /\b(human|agent|person|someone|talk to|speak (to|with)|sales team|representative)\b/i, t: null, human: true },
+            {
+              k: /\b(price|prices|pricing|cost|costs|quote|quotes|quotation|how much|rates?|budget|offer letter)\b/i,
+              t: "Detailed prices aren't listed in our company profile — every solution is tailored to your requirements and <b>your budget</b>.\n\nShare what you need and our sales team will prepare a quotation for you:",
+              act: true, chips: [C.services, C.contact]
+            },
+            {
+              k: /(\bamc\b|annual maintenance|maintenance contract|support contract|service contract)/i,
+              t: "We provide <b>customized and integrated Annual Maintenance Contracts (AMCs)</b> for business customers.\n\nThe support scope covers:\n• Surveillance-system maintenance\n• Biometric devices and intercoms\n• Hardware services and troubleshooting\n• Data backup and recovery\n• Online and offline support\n• Structured cabling and network support",
+              chips: [C.services, C.quote]
+            },
+            {
+              k: /(aitime|workforce|\bshifts?\b|payroll|overtime|geofenc|attendance (software|app|system|management|platform)|hr software|leave request)/i,
+              t: "<b>AiTIME</b> is an enterprise workforce-management platform that combines a web cloud dashboard, on-premises biometric devices and Android/iOS apps:\n\n• <b>Real-time attendance</b> — live punches, present/absent, late and early-leave counters\n• <b>Geofencing</b> — GPS-restricted mobile punching at authorized job sites\n• <b>HR & shifts</b> — multi-shift planning, automated overtime, leave approvals and payroll export\n• <b>Multi-branch</b> — consolidated reporting across offices, outlets and remote sites",
+              chips: [C.access, C.quote]
+            },
+            {
+              k: /(\bgates?\b|barrier|turnstile|bollard|road blocker|tyre killer|\banpr\b|number plate|parking|siomatek)/i,
+              t: "Our <b>entrance automation and perimeter security</b> range includes:\n\n• <b>SIOMATEK GL620D smart barrier gate</b> — 100 W DC motor, 2–6 second adjustable speed, aluminium boom up to 6 m, mobile-app control, Wi-Fi, loop detectors and radar safety sensors\n• <b>Pedestrian turnstiles</b> — tripod, swing, flap, sliding-glass, speed gates and full-height turnstiles\n• <b>Perimeter security</b> — automatic retractable bollards, road blockers/tyre killers and ANPR systems with LED displays",
+              chips: [C.access, C.quote]
+            },
+            {
+              k: /(access control|biometric|fingerprint|face recog|facial|\brfid\b|proximity|attendance|zkteco|lokiz|magnetic lock|maglock|smart lock|door lock|exit switch|card reader)/i,
+              t: "Our <b>access control and attendance</b> solutions include:\n\n• Access-control systems and card readers\n• Fingerprint and facial-recognition devices\n• RFID and proximity sensors\n• Time-attendance devices — networked or standalone\n• Control-room and HR integration modules\n\nListed lines include <b>ZKTeco</b> biometrics and smart locks, <b>LOKIZ</b> keypads, RFID readers and exit switches, and electromagnetic locks from LOKIZ and <b>GEM (Gianni Industries)</b>.",
+              chips: [C.aitime, C.gates, C.quote]
+            },
+            {
+              k: /(\beas\b|anti-?theft|security tags?|detacher|deactivat|retail security|58 ?khz|shoplift)/i,
+              t: "For retail stores we supply <b>58 kHz AM electronic article surveillance (EAS)</b>:\n\n• Hard tags, optical/sunglass tags and spider-wrap tags with cable alarms\n• Transparent safer boxes for cosmetics and razors\n• 9000 and 11000 Gauss magnetic detachers\n• AM barcode security labels, deactivator pads and double-checker units",
+              chips: [C.cctv, C.quote]
+            },
+            {
+              k: /(intercom|alarm|intruder|home automation|smart home|\bgps\b|vehicle tracking|tracking system)/i,
+              t: "Alongside CCTV, our <b>security systems</b> include:\n\n• Audio/video intercoms\n• Intruder alarm and fire alarm systems\n• Home automation\n• GPS vehicle tracking\n• Gate barriers and entrance security\n\nWe cover residential, commercial and industrial sites.",
+              chips: [C.cctv, C.access, C.quote]
+            },
+            {
+              k: /(cctv|camera|surveillance|\bnvr\b|\bdvr\b|\bptz\b|hikvision|dahua|uniview|\bunv\b|pelco|\baxis\b|panasonic|acusense|security)/i,
+              t: "We supply, install, integrate and maintain <b>CCTV and video surveillance</b> systems:\n\n• Dome, bullet, 360° PTZ and box cameras — IP, Wi-Fi and solar options\n• NVR/DVR recorders in 4- to 64-channel configurations, with remote mobile access\n• Featured: <b>Hikvision 6 MP AcuSense bullet</b> (AI human/vehicle detection, 60 m IR) and <b>4 MP Smart Hybrid Light</b> cameras with strobe and siren deterrence\n\nBrands listed: Hikvision, Dahua, Panasonic, Uniview, Pelco, Axis, Samsung and TP-Link.",
+              chips: [C.alarms, C.storage, C.quote]
+            },
+            {
+              k: /(\bpbx\b|telephon|phone system|voip|ip phones?|desk phones?|yeastar|grandstream|sip-?t44|linkus|\bucm\b|\bdect\b|call cent)/i,
+              t: "Our <b>IP telephony and unified communications</b> range:\n\n• <b>Yeastar P-Series PBX</b> — P520 (20 users), P550 (50), P560 (200), P570 (500), with the Linkus UC client\n• <b>Linkus Cloud Pro</b> — cloud PBX with Microsoft 365 and Google Workspace integrations\n• <b>Grandstream</b> — UCM6300 IP PBX, IP and video phones, DECT phones, VoIP gateways and RemoteConnect plans from 10 to 400 users\n• <b>Yealink SIP-T44U</b> executive desk phone",
+              chips: [C.net, C.av, C.quote]
+            },
+            {
+              k: /(firewall|\bvpn\b|draytek|vigor|\brouters?\b|load balanc)/i,
+              t: "For secure connectivity we offer <b>DrayTek firewalls and VPN gateways</b>:\n\n• <b>Vigor2915ac</b> — dual-WAN load balancing/failover, 16 concurrent VPN tunnels (8 SSL VPN), 802.11ac Wi-Fi, IPv6\n• <b>Vigor2927ax</b> — Wi-Fi 6 router and encrypted work-from-home VPN gateway for up to 50 employees",
+              chips: [C.net, C.cabling, C.quote]
+            },
+            {
+              k: /(network|wi-?fi|wireless|\bswitch(es)?\b|access points?|omada|cisco|ubiquiti|mikrotik|ruijie|\bh3c\b|d-link|\blan\b)/i,
+              t: "We design, deploy and support <b>wired and Wi-Fi networks</b> — from office setups to enterprise infrastructure:\n\n• <b>TP-Link Omada EAP725-Wall</b> — Wi-Fi 7 in-wall access point, up to 3.6 Gbps, cloud-managed\n• <b>Huawei enterprise switch</b> — 48 Gigabit ports with 10G SFP+ uplinks\n• Firewalls, VPN gateways, switches, access points and network storage\n\nNetworking brands listed: TP-Link Omada, Huawei, Cisco, Ruijie, Ubiquiti, MikroTik, D-Link, Wi-Tek and H3C.",
+              chips: [C.cabling, C.firewall, C.quote]
+            },
+            {
+              k: /(cabl|fib(er|re)|cat ?5|cat ?6|cat ?7|structured|patch cords?|belden|opterna|office setup|office infrastructure|server cabinet|\belv\b)/i,
+              t: "Our <b>structured cabling and infrastructure</b> work includes:\n\n• CAT 5e, CAT 6, CAT 6a and CAT 7 cabling and patch cords\n• Professional optical-fiber installation, SC/APC adapters and fiber patch cords\n• Cabinets, UPS and integrated office infrastructure\n• Integration of network, CCTV and biometric access control\n\nCabling brands listed: Belden, Opterna and D-Link.",
+              chips: [C.net, C.cctv, C.quote]
+            },
+            {
+              k: /(solar|inverter|batter|\bups\b|power backup|lifepo4|\bapc\b|schneider|\bevi\b|energy storage)/i,
+              t: "Our <b>solar energy and power backup</b> range:\n\n• Hybrid solar inverters for villas and businesses\n• LiFePO4 lithium energy-storage batteries — wall-mounted, floor-standing and modular towers with smart BMS\n• <b>EVI Danish Heritage</b> double-conversion online UPS from 650 VA to 600 kVA (e.g. the 10 kVA EP-UPS10000P110R)\n• <b>APC by Schneider Electric</b> offline, line-interactive and online UPS",
+              chips: [C.servers, C.quote]
+            },
+            {
+              k: /(\bnas\b|storage|qnap|synology|hard (drive|disk)|wd purple|backup)/i,
+              t: "For <b>data storage and backup</b> we offer:\n\n• <b>QNAP</b> and <b>Synology</b> NAS servers\n• <b>WD Purple</b> surveillance hard drives up to 10 TB\n• Data backup and recovery services",
+              chips: [C.cctv, C.servers, C.quote]
+            },
+            {
+              k: /(meeting room|conferenc|interactive|smart class|display|\bled\b|video wall|totem|signage|projector|tv lift|\bpa system|public address|speaker|amplifier|microphone|maxhub|onescreen|meetingboard|\bav\b|audio)/i,
+              t: "Our <b>meeting room, display and audio-visual</b> solutions:\n\n• <b>Interactive displays</b> — OneScreen, Yealink MeetingBoard65 (65\" 4K, Teams/Zoom) and MAXHUB 4K panels\n• <b>Yealink room bundles</b> — for small (2–6), medium (6–12), large (12–20) rooms and auditoriums (20+)\n• <b>NEXIS commercial LED</b> — advertising totems and video walls\n• SIOMATEK floor-rising projector screens and motorized TV-lift cabinets\n• PA systems and audio — FYB, DSPPA, Bosch and Boss Professional",
+              chips: [C.phones, C.quote]
+            },
+            {
+              k: /(server|\bhpe\b|proliant|rackmount|rack mount)/i,
+              t: "We supply <b>HPE ProLiant Gen11 servers</b>:\n\n• <b>DL325 Gen11</b> — AMD EPYC 9124 16-core, 64 GB RAM, 2 × 480 GB SSD, redundant 1000 W PSUs\n• <b>ML30 Gen11 Tower</b> — Intel Xeon E-2414, 16/32 GB ECC RAM, four 3.5\" bays, three-year warranty\n• <b>DL380 Gen11</b> — 2U dual-socket enterprise rackmount\n\nUpgrades include enterprise SSDs, DDR5 ECC RAM and Windows Server licences.",
+              chips: [C.computers, C.storage, C.quote]
+            },
+            {
+              k: /(\bpos\b|point of sale|cash drawer|receipt printer|ecopos|barcode)/i,
+              t: "Our <b>ECOPOS 1560 complete POS bundle</b> includes:\n\n• Intel Core i7-4500U, 8 GB RAM, 256 GB SSD\n• 15.6\" capacitive touchscreen (1366 × 768)\n• Thermal receipt printer and heavy-duty cash drawer\n\nWe also supply barcode scanners and accessories.",
+              chips: [C.computers, C.quote]
+            },
+            {
+              k: /(printers?|toners?|cartridges?|\bink\b|consumables?|ricoh|canon|brother|laserjet|develop)/i,
+              t: "Our <b>printers and consumables</b>:\n\n• <b>HP</b> Color LaserJet multifunction and wireless all-in-one printers\n• <b>Brother</b> colour laser/LED all-in-ones with ADF and multi-tray options\n• Toners and cartridges for <b>HP</b>, <b>Canon</b>, <b>Ricoh</b>, <b>Develop</b> and <b>Brother</b> — including bulk toner bottles and copier imaging units",
+              chips: [C.computers, C.quote]
+            },
+            {
+              k: /((?<!emirates )\bcomputers?\b|laptops?|desktops?|workstations?|\bpcs?\b|\bdell\b|lenovo|\basus\b|\bmsi\b|\bhp\b|hardware|accessor|docking|cabletime|smps|scanners?)/i,
+              t: "Our <b>computing hardware</b> range:\n\n• Commercial laptops, desktops and workstations from <b>Dell, HP, Lenovo, Asus and MSI</b>\n• PC assembling and custom configurations\n• Replacement SMPS units for Dell, HP and Lenovo business PCs\n• Scanners, projectors, barcode scanners and accessories — including CABLETIME USB-C docks and 240 W cables",
+              chips: [C.servers, C.printers, C.quote]
+            },
+            {
+              k: /(certif|\biso\b|approv|accredit|award|authori[sz]ed dealer|dealership|exclusive|trade licen|licensed)/i,
+              t: "A complete certification, approval or award register isn't listed as confirmed information in our company profile, and we don't state any exclusive dealerships.\n\nFor current certifications or approvals, please check directly with our sales team:",
+              act: true, chips: [C.contact, C.services]
+            },
+            {
+              k: /(support|troubleshoot|repair|software|licen[cs]|recovery|digital marketing|academic|pc assembl|it services?)/i,
+              t: "Our <b>IT support and services</b> include:\n\n• Hardware services and PC assembling\n• Troubleshooting and technical support — online and offline\n• Data backup and recovery\n• Software solutions and licence packages\n• Academic solutions and digital marketing services",
+              chips: [C.amc, C.quote]
+            },
+            {
+              k: /(project|case stud|experience|portfolio|reference|huawei|ekit|past work|done before)/i,
+              t: "Our published implementation experience covers:\n\n• CCTV and business-network integration\n• Structured cabling and office infrastructure\n• Biometric access-control integration\n• Warehouse and industrial ELV infrastructure\n• Wireless infrastructure reconstruction for an Abu Dhabi apartment building — referenced in a <b>Huawei eKit</b> case study, where we were the project subcontractor and Huawei eKit distribution partner\n\nNamed client lists and project values aren't published in our profile.",
+              chips: [C.services, C.quote]
+            },
+            {
+              k: /(brands?|partners?|manufacturer|vendors?|which compan)/i,
+              t: "Brands listed across our portfolio include:\n\n• <b>CCTV:</b> Hikvision, Dahua, Panasonic, Uniview, Pelco, Axis, Samsung, TP-Link\n• <b>Access & gates:</b> ZKTeco, LOKIZ, GEM, SIOMATEK\n• <b>Telephony:</b> Yeastar, Grandstream, Yealink\n• <b>Networking:</b> TP-Link Omada, Huawei, Cisco, Ruijie, Ubiquiti, MikroTik, D-Link, Wi-Tek, H3C, DrayTek\n• <b>Computing & storage:</b> HPE, Dell, HP, Lenovo, Asus, MSI, QNAP, Synology, WD\n• <b>AV, print & power:</b> OneScreen, MAXHUB, NEXIS, HP, Brother, Canon, Ricoh, EVI, APC",
+              chips: [C.cctv, C.net, C.services]
+            },
+            {
+              k: /(industr|sectors?|customers?|clients?|schools?|education|universit|warehouse|residential|villa|\bsmes?\b|enterprise|commercial)/i,
+              t: "We work with:\n\n• Commercial businesses and corporate/enterprise organizations\n• SMEs and offices\n• Industrial facilities and warehouses\n• Educational institutions and smart classrooms\n• Residential customers\n\n— and any organization needing integrated IT, security, communications and network infrastructure.",
+              chips: [C.services, C.projects]
+            },
+            {
+              k: /\b(ceo|owner|founder|director|managers?|leadership|management team|team size|employees|staff|how many people)\b/i,
+              t: "Leadership names and an organizational chart aren't listed in our company profile. Our public company profile lists a team of <b>11–50 employees</b>.\n\nFor anything specific, our team will be happy to help:",
+              act: true, chips: [C.about, C.contact]
+            },
+            {
+              k: /(where|locations?|address|branch|offices?|visit|dubai|abu dhabi|musaffah|mussafah|qusais|sheikh zayed)/i,
+              t: "Our locations:\n\n• <b>Abu Dhabi — Head Office</b>\nMusaffah Industrial Area M9, near Royal Emirates Supermarket · P.O. Box 38575\n• <b>Abu Dhabi — Commercial LED Division</b>\nMussafah 9, Abu Dhabi\n• <b>Dubai — Al Qusais</b>\nOffice 101, Al Khalid Business Center\n• <b>Dubai — Sheikh Zayed Road</b>\nOffice 305, 3rd Floor, Al Attar Business Center\n\nOur products and services are available across the UAE.",
+              act: true, chips: [C.contact, C.services]
+            },
+            {
+              k: /(contact|phone|\bcall\b|number|e-?mail|\bmail\b|whatsapp|reach|website|get in touch)/i,
+              t: "Here's how to reach us:\n\n📞 Abu Dhabi: <b>+971 2 644 5458</b> / <b>+971 2 553 8526</b>\n💬 WhatsApp: <b>+971 55 518 4464</b> / +971 52 111 0907\n📞 Dubai Al Qusais: +971 4 255 5374 · Sheikh Zayed Road: +971 4 338 6606\n✉️ sales@firstemirate.com · info@firstemirates.ae\n🌐 www.firstemirate.com",
+              act: true, chips: [C.branches, C.quote]
+            },
+            {
+              k: /(about|company|who are (you|they)|first emirates|history|since|2011|tagline|background|profile)/i,
+              t: "<b>First Emirates Computers and Technical Services L.L.C.</b> is an Abu Dhabi-based IT and security systems company <b>serving since 2011</b> — a privately held IT solutions provider and system integrator.\n\nWe bring IT products, security products, installation, system integration, networking, access control, technical support and maintenance together under one provider, across the UAE, with solutions suited to each customer's budget.\n\n<b>“Your All in One IT Solution Partner”</b> · Smart Solutions | Stronger Future | Powering a Smarter Tomorrow",
+              chips: [C.services, C.branches, C.human]
+            },
+            {
+              k: /(services?|solutions?|what (do|can) you|products?|offer|provide|sell|supply)/i,
+              t: "We're your all-in-one IT and security partner:\n\n• <b>Security & surveillance</b> — CCTV, intercoms, alarms, home automation, GPS tracking, gates\n• <b>Access control & attendance</b> — biometrics, RFID, AiTIME workforce software\n• <b>IT hardware & support</b> — computers, servers, printers, POS, troubleshooting, backup\n• <b>Networking & communications</b> — Wi-Fi, cabling, fiber, firewalls, IP telephony\n• <b>Infrastructure & office setup</b> — cabling, UPS, cabinets, integration\n• <b>Audio-visual & displays</b> — meeting rooms, interactive displays, LED, PA\n• <b>Annual Maintenance Contracts</b>",
+              chips: [C.cctv, C.net, C.access, C.av]
+            },
+            {
+              k: /(thank|great|perfect|awesome|shukran|cheers)/i,
+              t: "You're most welcome! Anything else I can help you with — or shall I connect you with our team?",
+              chips: [C.services, C.quote, C.human]
+            }
+          ];
+          var FALLBACK = {
+            t: "Good question — that isn't covered in our company profile, but our team can help. I can tell you about our <b>services, products, brands, branches and contacts</b>, or connect you directly:",
+            act: true, chips: [C.services, C.branches, C.quote]
+          };
+
+          var chat = document.getElementById('atChat'), fab = document.getElementById('atFab'),
+            body = document.getElementById('atBody'), input = document.getElementById('atIn'),
+            send = document.getElementById('atSend'), closeBtn = document.getElementById('atClose');
+          var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.classList.contains('static');
+          var greeted = false;
+
+          function scrollDown() { body.scrollTop = body.scrollHeight; }
+          function addUser(t) { var d = document.createElement('div'); d.className = 'at-msg user'; d.textContent = t; body.appendChild(d); scrollDown(); }
+          function addBot(html, instant) {
+            var d = document.createElement('div'); d.className = 'at-msg bot'; body.appendChild(d);
+            if (reduced || instant) { d.innerHTML = html; scrollDown(); return Promise.resolve(); }
+            return new Promise(function (res) {
+              var i = 0;
+              var iv = setInterval(function () { i += 4; d.innerHTML = html.slice(0, i); scrollDown(); if (i >= html.length) { d.innerHTML = html; clearInterval(iv); res(); } }, 12);
+            });
+          }
+          function addChips(list) {
+            if (!list || !list.length) return;
+            var w = document.createElement('div'); w.className = 'at-chips';
+            list.forEach(function (c) {
+              var b = document.createElement('button'); b.className = 'at-chip' + ((/quote/i.test(c)) ? ' hot' : ''); b.textContent = c;
+              b.addEventListener('click', function () { w.remove(); ask(c); }); w.appendChild(b);
+            });
+            body.appendChild(w); scrollDown();
+          }
+          function addActions() {
+            var w = document.createElement('div'); w.className = 'at-actions';
+            w.innerHTML = '<a class="btn at-act wa" href="' + WA + '" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.2 1.2-1.7 1.2-.4.1-1 .1-1.6-.1a13 13 0 0 1-1.5-.5 11.5 11.5 0 0 1-4.4-3.9c-.3-.5-.8-1.4-.8-2.3 0-.9.5-1.4.7-1.6.2-.2.4-.3.6-.3h.4c.2 0 .3 0 .5.4l.7 1.7c0 .2.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.7-.1l.6-.7c.2-.3.4-.2.6-.1l1.6.7c.2.1.4.2.4.3.1.1.1.5-.1 1Z"/></svg><div class="hover-roll-text" data-text="WhatsApp us"><span>WhatsApp us</span></div></a>' +
+              '<a class="btn btn-dark at-act" href="tel:+97125538526"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg><div class="hover-roll-text" data-text="Call now"><span>Call now</span></div></a>';
+            body.appendChild(w); scrollDown();
+          }
+          function typing() { var t = document.createElement('div'); t.className = 'at-typing'; t.innerHTML = '<i></i><i></i><i></i>'; body.appendChild(t); scrollDown(); return t; }
+          function localHit(q) { var hit = null; for (var i = 0; i < KB.length; i++) { if (KB[i].k.test(q)) { hit = KB[i]; break; } } if (hit && hit.human) hit = HUMAN; return hit || FALLBACK; }
+          function showHit(hit) { addBot(hit.t).then(function () { if (hit.act) addActions(); addChips(hit.chips); }); }
+          function respondLocal(q) { var t = typing(); var delay = reduced ? 60 : 650 + Math.min(q.length * 12, 500); setTimeout(function () { t.remove(); showHit(localHit(q)); }, delay); }
+          function respond(q) {
+            if (q === 'human') { var th = typing(); setTimeout(function () { th.remove(); showHit(HUMAN); }, reduced ? 60 : 400); return; }
+            if (!AT_AGENT_URL) { respondLocal(q); return; }
+            var t = typing(); var ctrl = ('AbortController' in window) ? new AbortController() : null; var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 20000);
+            fetch(AT_AGENT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: q, sessionId: AT_SESSION }), signal: ctrl ? ctrl.signal : undefined })
+              .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+              .then(function (d) { clearTimeout(timer); var reply = d && (d.reply || d.output || d.text || d.answer); if (!reply) throw new Error('empty'); t.remove(); addBot(atFmt(reply), true).then(function () { addChips([C.services, C.quote, C.human]); }); })
+              .catch(function () { clearTimeout(timer); t.remove(); showHit(localHit(q)); });
+          }
+          function ask(q) { if (/talk to a human/i.test(q)) { addUser(q); respond('human'); return; } addUser(q); respond(q); }
+          function greet() {
+            if (greeted) return; greeted = true;
+            var t = typing();
+            setTimeout(function () { t.remove(); addBot("👋 Hi, I'm the <b>First Emirates Assistant</b>. I can help with our IT, security, networking and communication solutions, products, brands, branches and contacts.\n\nHow can I help you today?").then(function () { addChips([C.services, C.cctv, C.net, C.branches, C.human]); }); }, reduced ? 60 : 800);
+          }
+          function openChat() { chat.classList.add('open'); fab.classList.add('hide'); greet(); if (window.innerWidth > 600) input.focus(); if (window.matchMedia('(max-width:480px)').matches) document.body.classList.add('at-lock'); }
+          function closeChat() { chat.classList.remove('open'); fab.classList.remove('hide'); document.body.classList.remove('at-lock'); }
+          fab.addEventListener('click', openChat);
+          closeBtn.addEventListener('click', closeChat);
+          send.addEventListener('click', function () { var v = input.value.trim(); if (!v) return; input.value = ''; ask(v); });
+          input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { var v = input.value.trim(); if (!v) return; input.value = ''; ask(v); } });
+          document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && chat.classList.contains('open')) closeChat(); });
+          if (location.search.indexOf('chat=1') > -1) openChat();
+
+        })();
+
+        /* ─── Hero Aurora (WebGL2 "Wave Gradient" shader) ─── */
+        (function () {
+            var canvas = document.getElementById('heroAurora');
+            if (!canvas) return;
+            var gl = canvas.getContext('webgl2', { alpha: true, premultipliedAlpha: false, antialias: false });
+            if (!gl) return; // CSS gradient alone
+
+            // Brand colours (numeric for the shader): 35% red tint, --color-brand-primary,
+            // 70% --color-dark-3 into brand, --color-dark-3
+            var COLORS = [[222, 160, 160], [180, 3, 3], [66, 13, 13], [17, 17, 17]];
+            var U = {
+                u_seed: 50, u_waveSpeed: 1, u_waveFreqX: 4, u_waveFreqY: 2, u_waveAngle: 45,
+                u_waveAmplitude: 1.5, u_maskSoftness: 1.6, u_blendAmount: .9
+            };
+
+            var VERT = '#version 300 es\nprecision highp float;\nin vec2 a_position;\nin vec2 a_texCoord;\nout vec2 v_uv;\nvoid main() {\n    v_uv = a_texCoord;\n    gl_Position = vec4(a_position, 0.0, 1.0);\n}\n';
+
+            var FRAG = '#version 300 es\nprecision highp float;\nin vec2 v_uv;\nout vec4 fragColor;\n' +
+                'uniform float u_time;\nuniform vec2 u_resolution;\n' +
+                Object.keys(U).map(function (k) { return 'uniform float ' + k + ';'; }).join('\n') +
+                '\nuniform vec4 u_colors[4];\nuniform int u_colors_length;\n' + `
+#define S(a,b,t) smoothstep(a,b,t)
+
+mat2 Rot(float a) {
+    float s = sin(a), c = cos(a);
+    return mat2(c, -s, s, c);
+}
+
+vec2 hash(vec2 p) {
+    float s = u_seed;
+    vec2 k1 = vec2(2127.1 + s * 13.37, 81.17 + s * 7.31);
+    vec2 k2 = vec2(1269.5 + s * 11.13, 283.37 + s * 5.79);
+    p = vec2(dot(p, k1), dot(p, k2));
+    return fract(sin(p) * (43758.5453 + s * 1.618));
+}
+
+float noise(in vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    vec2 u = f * f * (3.0 - 2.0 * f);
+    float n = mix(
+        mix(dot(-1.0 + 2.0 * hash(i), f),
+            dot(-1.0 + 2.0 * hash(i + vec2(1.0, 0.0)), f - vec2(1.0, 0.0)), u.x),
+        mix(dot(-1.0 + 2.0 * hash(i + vec2(0.0, 1.0)), f - vec2(0.0, 1.0)),
+            dot(-1.0 + 2.0 * hash(i + vec2(1.0, 1.0)), f - vec2(1.0, 1.0)), u.x),
+        u.y
+    );
+    return 0.5 + 0.5 * n;
+}
+
+vec3 getColor(int idx) {
+    if (u_colors_length < 1) return vec3(0.0);
+    int safeIdx = clamp(idx, 0, u_colors_length - 1);
+    return u_colors[safeIdx].rgb;
+}
+
+float seedF(float base) {
+    return base * (1.0 + 0.5 * sin(u_seed * 3.17 + base));
+}
+
+vec2 warpUV(vec2 uv) {
+    float t = u_time * u_waveSpeed;
+
+    float angleOffset = sin(u_seed * 2.73) * 30.0;
+    mat2 dirRot = Rot(radians(u_waveAngle + angleOffset));
+    vec2 ruv = dirRot * uv;
+
+    float fxMod = seedF(u_waveFreqX);
+    float fyMod = seedF(u_waveFreqY);
+
+    float phaseX = fract(sin(u_seed * 7.19) * 437.58) * 6.2832;
+    float phaseY = fract(cos(u_seed * 3.41) * 291.37) * 6.2832;
+
+    // Core wave with seed-dependent harmonics
+    float harmonic = sin(u_seed * 1.23) * 0.5;
+    float a = fyMod * ruv.y - sin(ruv.x * fxMod + ruv.y - t + phaseX);
+    a += harmonic * sin(ruv.x * fxMod * 2.0 + ruv.y * 0.5 + t * 0.7 + phaseY);
+
+    // Smoothstep mask (unchanged)
+    a = smoothstep(
+        cos(a) * u_maskSoftness,
+        sin(a) * u_maskSoftness + 3.,
+        cos(a - fyMod * ruv.y) - sin(a - fxMod * ruv.x)
+    );
+
+    a *= u_waveAmplitude;
+
+    uv = cos(a) * uv + sin(a) * vec2(-uv.y, uv.x);
+    return uv;
+}
+
+void main() {
+    vec2 fragCoord = v_uv * u_resolution;
+    vec2 uv = fragCoord / u_resolution.xy;
+    float ratio = u_resolution.x / u_resolution.y;
+    float t = u_time * u_waveSpeed;
+
+    vec2 tuv = uv - 0.5;
+
+    vec2 seedShift = vec2(sin(u_seed * 4.37), cos(u_seed * 5.91)) * 100.0;
+    float degree = noise(vec2(t * 0.1, tuv.x * tuv.y) + seedShift);
+    tuv.y *= 1.0 / ratio;
+    tuv *= Rot(radians((degree - 0.5) * 720.0 + 180.0));
+    tuv.y *= ratio;
+
+    // Seed-rotate uv2 before warping
+    vec2 uv2 = (fragCoord * 2.0 - u_resolution.xy) / (u_resolution.x + u_resolution.y) * 2.0;
+    float preRotAngle = fract(sin(u_seed * 5.63) * 173.29) * 6.2832;
+    uv2 *= Rot(preRotAngle);
+    vec2 warped = warpUV(uv2) * 0.5 + 0.5;
+
+    vec2 blendUV = mix(tuv, warped - 0.5, u_blendAmount);
+
+    float layerRot1 = -5.0 + sin(u_seed * 1.83) * 20.0;
+    float layerRot2 = 10.0 + cos(u_seed * 2.47) * 20.0;
+
+    vec3 c0 = getColor(0);
+    vec3 c1 = getColor(1);
+    vec3 c2 = getColor(2);
+    vec3 c3 = getColor(3);
+
+    vec3 layer1 = mix(c0, c2, S(-0.3, 0.3, (blendUV * Rot(radians(layerRot1))).x));
+    vec3 layer2 = mix(c3, c1, S(-0.3, 0.3, (blendUV * Rot(radians(layerRot2))).x));
+    vec3 col = mix(layer1, layer2, S(0.3, -0.3, blendUV.y));
+
+    col = mix(col, col * col + 0.5 * sqrt(col), 0.3);
+
+    fragColor = vec4(col, 1.0);
+}
+`;
+
+            function compile(type, src) {
+                var s = gl.createShader(type);
+                gl.shaderSource(s, src);
+                gl.compileShader(s);
+                if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+                return s;
+            }
+            var prog = gl.createProgram();
+            try {
+                gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT));
+                gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG));
+                gl.linkProgram(prog);
+                if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+            } catch (err) { console.warn('Hero aurora disabled:', err); return; }
+            gl.useProgram(prog);
+
+            // Full-screen quad: position (clip space) + texCoord
+            var buf = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+                -1, -1, 0, 0, 1, -1, 1, 0, -1, 1, 0, 1,
+                -1, 1, 0, 1, 1, -1, 1, 0, 1, 1, 1, 1
+            ]), gl.STATIC_DRAW);
+            var aPos = gl.getAttribLocation(prog, 'a_position'), aTex = gl.getAttribLocation(prog, 'a_texCoord');
+            gl.enableVertexAttribArray(aPos);
+            gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 16, 0);
+            gl.enableVertexAttribArray(aTex);
+            gl.vertexAttribPointer(aTex, 2, gl.FLOAT, false, 16, 8);
+
+            var loc = function (n) { return gl.getUniformLocation(prog, n); };
+            Object.keys(U).forEach(function (k) { gl.uniform1f(loc(k), U[k]); });
+            gl.uniform4fv(loc('u_colors'), new Float32Array(COLORS.reduce(function (a, c) {
+                return a.concat([c[0] / 255, c[1] / 255, c[2] / 255, 1]);
+            }, [])));
+            gl.uniform1i(loc('u_colors_length'), COLORS.length);
+            var uTime = loc('u_time'), uRes = loc('u_resolution');
+
+            var SCALE = 0.5; // soft gradient: render at half resolution
+            function resize() {
+                var dpr = Math.min(window.devicePixelRatio || 1, 2) * SCALE;
+                var w = Math.max(1, Math.round(canvas.clientWidth * dpr)),
+                    h = Math.max(1, Math.round(canvas.clientHeight * dpr));
+                if (canvas.width !== w || canvas.height !== h) {
+                    canvas.width = w; canvas.height = h;
+                    gl.viewport(0, 0, w, h);
+                }
+                gl.uniform2f(uRes, w, h);
+            }
+            function draw(t) { resize(); gl.uniform1f(uTime, t); gl.drawArrays(gl.TRIANGLES, 0, 6); }
+
+            var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduced) {
+                draw(0);
+                new ResizeObserver(function () { draw(0); }).observe(canvas);
+                return;
+            }
+
+            var visible = true, raf = 0, start = performance.now();
+            function loop(now) { draw((now - start) / 1000); raf = requestAnimationFrame(loop); }
+            function update() {
+                var run = visible && !document.hidden;
+                if (run && !raf) raf = requestAnimationFrame(loop);
+                if (!run && raf) { cancelAnimationFrame(raf); raf = 0; }
+            }
+            new IntersectionObserver(function (entries) { visible = entries[0].isIntersecting; update(); })
+                .observe(canvas);
+            document.addEventListener('visibilitychange', update);
+            update();
+        })();
+    </script>
+
+    <!-- Hero 3D robot (Three.js module) -->
+    <script type="module">
+        import * as THREE from 'three';
+        import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+        import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+        const wrap = document.querySelector('.hero-graphic');
+        const canvas = document.getElementById('heroRobot');
+        const hero = document.querySelector('.hero-section');
+        if (wrap && canvas && hero) init();
+
+        function init() {
+            let renderer;
+            try {
+                renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, preserveDrawingBuffer: /poster/.test(location.search) });
+            } catch (e) { return; } // no WebGL: poster stays
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.05;
+            renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+            const scene = new THREE.Scene();
+            const pmrem = new THREE.PMREMGenerator(renderer);
+            scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+            scene.environmentIntensity = 0.85;
+
+            const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
+            camera.position.set(0, 0.2, 9.4);
+            camera.lookAt(0, -0.3, 0);
+
+            // Lights: white key, brand-red rims, soft fill
+            const key = new THREE.DirectionalLight(0xffffff, 2.4); key.position.set(3, 5, 6); scene.add(key);
+            const rimR = new THREE.DirectionalLight(0xff2a2a, 5); rimR.position.set(5, 1.5, -4); scene.add(rimR);
+            const rimL = new THREE.DirectionalLight(0xb40303, 3); rimL.position.set(-5, 0.5, -3); scene.add(rimL);
+            scene.add(new THREE.HemisphereLight(0xffffff, 0x2a0000, 0.5));
+
+            // Materials
+            const shell = new THREE.MeshPhysicalMaterial({ color: 0xf3f3f3, roughness: 0.26, clearcoat: 1, clearcoatRoughness: 0.06 });
+            const graphite = new THREE.MeshPhysicalMaterial({ color: 0x161616, roughness: 0.32, metalness: 0.65, clearcoat: 0.6 });
+            const glass = new THREE.MeshPhysicalMaterial({ color: 0x040404, roughness: 0.05, metalness: 0.3, clearcoat: 1, clearcoatRoughness: 0.02 });
+            const body = new THREE.MeshPhysicalMaterial({ color: 0x1c1c1c, roughness: 0.22, metalness: 0.35, clearcoat: 1, clearcoatRoughness: 0.05 });
+            const glow = (k) => new THREE.MeshBasicMaterial({ color: new THREE.Color(0xff3b3b).multiplyScalar(k), toneMapped: false });
+
+            // Additive glow sprite (alpha-safe bloom substitute)
+            const glowTex = (() => {
+                const c = document.createElement('canvas'); c.width = c.height = 128;
+                const g = c.getContext('2d'), r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+                r.addColorStop(0, 'rgba(255,70,70,1)'); r.addColorStop(0.35, 'rgba(255,40,40,.45)'); r.addColorStop(1, 'rgba(255,0,0,0)');
+                g.fillStyle = r; g.fillRect(0, 0, 128, 128);
+                const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+            })();
+            const halo = (size, opacity) => {
+                const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity }));
+                s.scale.set(size, size, 1); return s;
+            };
+
+            const robot = new THREE.Group();
+            scene.add(robot);
+
+            // Torso (cropped by the hero bottom)
+            const torso = new THREE.Group();
+            torso.position.y = -2.45;
+            robot.add(torso);
+            torso.add(new THREE.Mesh(new RoundedBoxGeometry(3.2, 2.5, 1.8, 8, 0.72), body));
+            const panel = new THREE.Mesh(new RoundedBoxGeometry(1.15, 0.62, 0.12, 4, 0.1), shell);
+            panel.position.set(0, 0.62, 0.88); torso.add(panel);
+            const chest = new THREE.Mesh(new THREE.CircleGeometry(0.11, 32), glow(2.2));
+            chest.position.set(0, 0.62, 0.95); torso.add(chest);
+            const chestHalo = halo(0.9, 0.7); chestHalo.position.set(0, 0.62, 1.0); torso.add(chestHalo);
+
+            // Neck + halo ring
+            const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.42, 0.5, 40), graphite);
+            neck.position.y = -1.05; robot.add(neck);
+            const ring = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.035, 16, 96), glow(2.6));
+            ring.rotation.x = Math.PI / 2; ring.position.y = -0.98; robot.add(ring);
+
+            // Head (pivot at the neck so it turns naturally)
+            const headPivot = new THREE.Group();
+            headPivot.position.y = -0.9;
+            robot.add(headPivot);
+            const head = new THREE.Group();
+            head.position.y = 1.0;
+            headPivot.add(head);
+            head.add(new THREE.Mesh(new RoundedBoxGeometry(2.15, 1.7, 1.8, 10, 0.66), shell));
+            const visor = new THREE.Mesh(new RoundedBoxGeometry(1.72, 1.0, 0.24, 8, 0.36), glass);
+            visor.position.set(0, -0.02, 0.82); head.add(visor);
+
+            const eyes = new THREE.Group();
+            eyes.position.set(0, 0.02, 0.96);
+            head.add(eyes);
+            const eyeGeo = new THREE.CapsuleGeometry(0.1, 0.2, 8, 24);
+            const eyeL = new THREE.Mesh(eyeGeo, glow(3)), eyeR = new THREE.Mesh(eyeGeo, glow(3));
+            eyeL.position.x = -0.36; eyeR.position.x = 0.36;
+            eyes.add(eyeL, eyeR);
+            const eyeHaloL = halo(0.85, 0.75), eyeHaloR = halo(0.85, 0.75);
+            eyeHaloL.position.set(-0.36, 0, 0.05); eyeHaloR.position.set(0.36, 0, 0.05);
+            eyes.add(eyeHaloL, eyeHaloR);
+
+            [-1, 1].forEach((side) => {
+                const ear = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.24, 40), graphite);
+                ear.rotation.z = Math.PI / 2; ear.position.set(side * 1.1, 0, 0); head.add(ear);
+                const earRing = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.028, 12, 64), glow(2.4));
+                earRing.rotation.y = Math.PI / 2; earRing.position.set(side * 1.23, 0, 0); head.add(earRing);
+            });
+
+            const antenna = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.04, 0.45, 16), graphite);
+            antenna.position.y = 1.05; head.add(antenna);
+            const tip = new THREE.Mesh(new THREE.SphereGeometry(0.09, 24, 24), glow(3));
+            tip.position.y = 1.32; head.add(tip);
+            const tipHalo = halo(0.7, 0.8); tipHalo.position.y = 1.32; head.add(tipHalo);
+
+            // Orbit ring around the head
+            const orbit = new THREE.Mesh(new THREE.TorusGeometry(1.75, 0.008, 8, 160), glow(1.4));
+            orbit.material.transparent = true; orbit.material.opacity = 0.55;
+            const orbitPivot = new THREE.Group();
+            orbitPivot.position.y = 0.1; orbitPivot.rotation.set(1.25, 0, 0.35);
+            orbitPivot.add(orbit);
+            const orbitDot = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 16), glow(3));
+            orbitDot.position.x = 1.75; orbit.add(orbitDot);
+            const orbitDotHalo = halo(0.4, 0.8); orbitDotHalo.position.x = 1.75; orbit.add(orbitDotHalo);
+            robot.add(orbitPivot);
+
+            robot.position.y = 0.15;
+
+            // Sizing
+            function resize() {
+                const w = canvas.clientWidth, h = canvas.clientHeight;
+                if (!w || !h) return;
+                renderer.setSize(w, h, false);
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+            }
+            new ResizeObserver(resize).observe(canvas);
+            resize();
+
+            // Input state
+            const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const touch = window.matchMedia('(hover: none)').matches;
+            const target = { x: 0, y: 0 }, look = { x: 0, y: 0 };
+            let scrollP = 0, scrollRot = 0;
+            if (!reduced && !touch) {
+                hero.addEventListener('pointermove', (e) => {
+                    const r = hero.getBoundingClientRect();
+                    target.x = ((e.clientX - r.left) / r.width) * 2 - 1;
+                    target.y = ((e.clientY - r.top) / r.height) * 2 - 1;
+                });
+                hero.addEventListener('pointerleave', () => { target.x = 0; target.y = 0; });
+            }
+            function onScroll() {
+                const y = window.scrollY;
+                scrollP = Math.min(1, Math.max(0, y / hero.offsetHeight));
+                if (!reduced) wrap.style.translate = `0 ${(y * 0.15).toFixed(1)}px`; // Utomic parallax speed 85
+            }
+            if (!reduced) window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+
+            // Blink
+            let nextBlink = 2.5, blinkT = -1;
+
+            const lerp = (a, b, k) => a + (b - a) * k;
+            const clock = new THREE.Clock();
+            function frame() {
+                const t = clock.getElapsedTime();
+                if (touch && !reduced) { target.x = Math.sin(t * 0.45) * 0.55; target.y = Math.sin(t * 0.31) * 0.25; }
+                look.x = lerp(look.x, target.x, 0.06);
+                look.y = lerp(look.y, target.y, 0.06);
+                scrollRot = lerp(scrollRot, scrollP, 0.08);
+
+                const yaw = look.x * 0.49, pitch = look.y * 0.21;
+                headPivot.rotation.y = yaw;
+                headPivot.rotation.x = pitch;
+                headPivot.rotation.z = -yaw * 0.08;
+                torso.rotation.y = yaw * 0.3;
+                eyes.position.x = look.x * 0.07;
+                eyes.position.y = 0.02 - look.y * 0.05;
+
+                robot.rotation.y = scrollRot * 0.6;
+                robot.rotation.x = scrollRot * 0.18;
+
+                if (!reduced) {
+                    robot.position.y = 0.15 + Math.sin(t * 1.1) * 0.07;
+                    head.rotation.z = Math.sin(t * 0.7) * 0.025;
+                    orbit.rotation.z = t * 0.5;
+                    const pulse = 0.65 + 0.35 * Math.sin(t * 2.4);
+                    tipHalo.material.opacity = 0.45 + 0.45 * pulse;
+                    chestHalo.material.opacity = 0.4 + 0.4 * Math.sin(t * 1.6 + 1) ** 2;
+                    if (t > nextBlink) { blinkT = t; nextBlink = t + 3 + Math.random() * 2.5; }
+                    const b = blinkT < 0 ? 1 : Math.min(1, Math.abs(t - blinkT - 0.09) / 0.09);
+                    eyes.scale.y = Math.max(0.12, b);
+                }
+                renderer.render(scene, camera);
+            }
+
+            if (/debug|poster/.test(location.search)) window.__heroRobot = { headPivot, robot, wrap, frame };
+
+            // First frame → reveal canvas over the poster
+            frame();
+            wrap.classList.add('is-ready');
+            if (reduced) {
+                new ResizeObserver(() => frame()).observe(canvas);
+                return;
+            }
+            let visible = true, raf = 0;
+            const loop = () => { frame(); raf = requestAnimationFrame(loop); };
+            const update = () => {
+                const run = visible && !document.hidden;
+                if (run && !raf) raf = requestAnimationFrame(loop);
+                if (!run && raf) { cancelAnimationFrame(raf); raf = 0; }
+            };
+            new IntersectionObserver((en) => { visible = en[0].isIntersecting; update(); }).observe(hero);
+            document.addEventListener('visibilitychange', update);
+            update();
+        }
     </script>
 </body>
 

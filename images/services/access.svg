@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 160" width="280" height="160" role="img" aria-label="Access control and biometrics — fingerprint scan">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1c1c1c"/>
+      <stop offset="1" stop-color="#0b0b0b"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="1.08" r="0.62">
+      <stop offset="0" stop-color="#b40303" stop-opacity="0.75"/>
+      <stop offset="0.55" stop-color="#b40303" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#b40303" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff4d4d" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#ff4d4d" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse">
+      <circle cx="7" cy="7" r="0.8" fill="#fff" fill-opacity="0.07"/>
+    </pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M1 1 L9 5 L1 9" fill="none" stroke="#ff4d4d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      .l{fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.4}
+      .m{stroke-opacity:.35}
+      .f{stroke-opacity:.18}
+      .r{stroke:#ff4d4d}
+      .rf{fill:#ff4d4d}
+    </style>
+  </defs>
+  <rect width="280" height="160" fill="url(#bg)"/>
+  <rect width="280" height="160" fill="url(#dots)"/>
+  <rect width="280" height="160" fill="url(#glow)"/>
+  <path class="l f" d="M24 150 H256"/>
+  <path class="l m" d="M92 36 V28 H100 M180 28 H188 V36 M188 124 V132 H180 M100 132 H92 V124"/>
+  <g transform="translate(140 82)">
+    <ellipse class="l" rx="6" ry="7.5" stroke-dasharray="30 8"/>
+    <ellipse class="l" rx="13" ry="16" stroke-dasharray="54 7 20 9"/>
+    <ellipse class="l" rx="20" ry="24.5" stroke-dasharray="70 9 34 10"/>
+    <ellipse class="l m" rx="27" ry="33" stroke-dasharray="90 10 50 12"/>
+    <ellipse class="l f" rx="34" ry="41.5" stroke-dasharray="110 12 60 14" transform="rotate(8)"/>
+  </g>
+  <rect x="96" y="66" width="88" height="20" fill="url(#beam)" transform="rotate(180 140 76)"/>
+  <path class="l r" d="M94 86 H186"/>
+  <circle class="rf" cx="94" cy="86" r="2.5"/><circle class="rf" cx="186" cy="86" r="2.5"/>
+  <rect x="0.5" y="0.5" width="279" height="159" rx="0" fill="none" stroke="#fff" stroke-opacity="0.06"/>
+</svg>
