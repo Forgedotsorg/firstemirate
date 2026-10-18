@@ -15,6 +15,10 @@
         content="IT solutions Abu Dhabi, CCTV installation UAE, security surveillance, structured cabling, biometric access control, networking solutions, IT support UAE, First Emirates Computers, system integrator Abu Dhabi" />
     <link rel="canonical" href="https://www.firstemirate.com/" />
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./images/logo.png" />
+    <link rel="apple-touch-icon" href="./images/logo.png" />
+
     <!-- ═══════════════════════════════════════════════════
        Open Graph (Facebook / LinkedIn)
   ═══════════════════════════════════════════════════ -->
@@ -483,8 +487,9 @@
             left: 0;
             width: 100%;
             z-index: var(--z-nav);
-            background-color: transparent;
-            transition: background-color var(--transition-base), box-shadow var(--transition-base);
+            background-color: var(--color-white);
+            box-shadow: var(--shadow-md);
+            transition: box-shadow var(--transition-base);
             animation: headerIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
@@ -501,8 +506,7 @@
         }
 
         .site-header.scrolled {
-            background-color: var(--color-white);
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-md);
         }
 
         .header-inner {
@@ -515,12 +519,21 @@
 
         .header-brand {
             font-family: var(--font-family-display);
-            font-size: 1.5rem;
-            font-weight: var(--font-weight-medium);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
             letter-spacing: -0.02em;
             line-height: 1;
             color: var(--color-dark-3);
             white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        .header-brand-logo {
+            width: auto;
+            height: 36px;
+            flex: none;
         }
 
         .header-actions {
@@ -531,8 +544,8 @@
 
         .header-menu-btn {
             position: relative;
-            width: 52px;
-            height: 52px;
+            width: 48px;
+            height: 48px;
             flex: none;
             display: flex;
             align-items: center;
@@ -544,33 +557,65 @@
             transition: background-color var(--transition-base);
         }
 
-        .header-menu-btn svg {
-            width: 26px;
-            height: 26px;
-            transition: transform var(--transition-base), opacity var(--transition-base);
-        }
-
-        .header-menu-btn .icon-close {
+        /* "=" that morphs into "×" — same mechanics as .faq-icon */
+        .header-menu-btn::before,
+        .header-menu-btn::after {
+            content: '';
             position: absolute;
-            width: 20px;
-            height: 20px;
-            opacity: 0;
-            transform: rotate(-90deg);
+            top: 50%;
+            left: 50%;
+            width: 18px;
+            height: 2px;
+            border-radius: 1px;
+            background-color: currentColor;
+            transition: all var(--transition-base);
         }
 
-        .header-menu-btn[aria-expanded="true"] .icon-open {
-            opacity: 0;
-            transform: rotate(90deg);
+        /* Top line of = */
+        .header-menu-btn::before {
+            transform: translate(-50%, -5px);
         }
 
-        .header-menu-btn[aria-expanded="true"] .icon-close {
-            opacity: 1;
-            transform: none;
+        /* Bottom line of = */
+        .header-menu-btn::after {
+            transform: translate(-50%, 3px);
+        }
+
+        /* When open, morph = into × */
+        .header-menu-btn[aria-expanded="true"]::before {
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+
+        .header-menu-btn[aria-expanded="true"]::after {
+            transform: translate(-50%, -50%) rotate(-45deg);
         }
 
         @media (max-width: 575.98px) {
             .header-contact {
                 display: none;
+            }
+
+            .header-brand-logo {
+                height: 32px;
+            }
+
+            /* only the menu button remains: smaller 42px circle */
+            .header-menu-btn {
+                width: 42px;
+                height: 42px;
+            }
+
+            .header-menu-btn::before,
+            .header-menu-btn::after {
+                width: 16px;
+            }
+
+            .header-menu-btn::before {
+                transform: translate(-50%, -4px);
+            }
+
+            .header-menu-btn::after {
+                transform: translate(-50%, 2px);
             }
         }
 
@@ -913,7 +958,7 @@
             flex-direction: column;
             justify-content: flex-end;
             align-items: center;
-            padding-top: 320px;
+            /* padding-top: 300px; */
             padding-bottom: 80px;
             background-color: var(--color-dark-3);
             overflow: hidden;
@@ -924,17 +969,16 @@
             position: absolute;
             inset: 0;
             z-index: 0;
-            background: radial-gradient(153.944% 89.968% at 50.5333% .853789%,
-                    var(--color-surface) 22.9436%,
-                    color-mix(in srgb, var(--color-brand-primary) 5%, var(--color-surface)) 28.3643%,
-                    color-mix(in srgb, var(--color-brand-primary) 15%, var(--color-surface)) 33.2604%,
-                    color-mix(in srgb, var(--color-brand-primary) 35%, var(--color-surface)) 40.2947%,
-                    color-mix(in srgb, var(--color-brand-primary) 65%, var(--color-surface)) 46.6164%,
-                    var(--color-brand-primary) 52.9953%,
-                    color-mix(in srgb, var(--color-dark-3) 25%, var(--color-brand-primary)) 60.6561%,
-                    color-mix(in srgb, var(--color-dark-3) 45%, var(--color-brand-primary)) 66.2877%,
-                    color-mix(in srgb, var(--color-dark-3) 70%, var(--color-brand-primary)) 72.7383%,
-                    var(--color-dark-3) 89.9086%);
+            background: radial-gradient(153.944% 89.968% at 50.5% -10%,
+                    var(--color-surface) 33%,
+                    color-mix(in srgb, var(--color-brand-primary) 5%, var(--color-surface)) 39%,
+                    color-mix(in srgb, var(--color-brand-primary) 15%, var(--color-surface)) 45%,
+                    color-mix(in srgb, var(--color-brand-primary) 35%, var(--color-surface)) 53%,
+                    color-mix(in srgb, var(--color-brand-primary) 65%, var(--color-surface)) 60%,
+                    var(--color-brand-primary) 66%,
+                    color-mix(in srgb, var(--color-dark-3) 25%, var(--color-brand-primary)) 75%,
+                    color-mix(in srgb, var(--color-dark-3) 60%, var(--color-brand-primary)) 85%,
+                    var(--color-dark-3) 98%);
         }
 
         /* Animated aurora (WebGL "Wave Gradient" shader, see script) */
@@ -958,7 +1002,7 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 3;
-            width: clamp(320px, 42vw, 520px);
+            width: clamp(320px, 42vw, 420px);
             aspect-ratio: 1;
             pointer-events: none;
             user-select: none;
@@ -1008,10 +1052,13 @@
         .hero-content {
             display: flex;
             flex-direction: column;
-            gap: 160px;
+            align-items: center;
+            /* text-align: center; */
+            gap: 100px;
         }
 
         .hero-row {
+            width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -1085,12 +1132,11 @@
             margin: 0;
             text-align: center;
             white-space: nowrap;
-            text-transform: uppercase;
             font-family: var(--font-family-display);
-            /* fills the content width exactly ("FIRST EMIRATES" in Sora 400 ≈ 8.26em wide — Utomic's title font) */
-            font-size: calc((min(100vw, var(--container-max)) - 2 * var(--container-gutter)) / 8.26);
-            font-size: calc(100cqw / 8.26); /* content box of .hero-container, scrollbar-safe */
-            font-weight: var(--font-weight-normal);
+            /* fills the content width exactly ("First Emirates" in Sora 400 ≈ 6.90em wide — Utomic's title font) */
+            font-size: calc((min(100vw, var(--container-max)) - 2 * var(--container-gutter)) / 6.90);
+            font-size: calc(100cqw / 6.90); /* content box of .hero-container, scrollbar-safe */
+            font-weight: var(--font-weight-medium);
             line-height: .9;
             letter-spacing: 0;
             color: var(--color-white);
@@ -1663,11 +1709,36 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
-            background-color: var(--color-white);
+            background-color: var(--color-dark-3);
+            color: var(--color-white);
             position: relative;
             overflow: hidden;
             z-index: 1;
             /* padding: var(--space-8); */
+        }
+
+        /* Brand-red abstract render (same family as the FAQ card image) */
+        .why-image-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            background: url('./images/why-us-img.png') center / cover no-repeat;
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* soft fade behind the text for legibility */
+        .why-image-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background: linear-gradient(to top, rgba(17, 17, 17, .75) 0%, rgba(17, 17, 17, .25) 45%, transparent 75%);
+            pointer-events: none;
+        }
+
+        .why-image-wrapper:hover::before {
+            transform: scale(1.06);
         }
 
         .why-spinning-img {
@@ -1706,14 +1777,14 @@
         .why-image-title {
             font-size: var(--font-size-2xl);
             font-weight: var(--font-weight-medium);
-            color: var(--color-text-heading);
+            color: var(--color-white);
             margin-bottom: var(--space-4);
         }
 
         .why-image-desc {
             font-size: var(--font-size-base);
             font-weight: var(--font-weight-medium);
-            color: var(--color-text-body);
+            color: rgba(255, 255, 255, .8);
             line-height: var(--line-height-normal);
             margin: 0;
             max-width: 85%;
@@ -2955,15 +3026,14 @@
   ═══════════════════════════════════════════════════ -->
     <header class="site-header" id="siteHeader">
         <div class="container header-inner">
-            <a href="#home" class="header-brand">First Emirates</a>
+            <a href="#home" class="header-brand">
+                <img src="./images/logo.png" alt="" class="header-brand-logo" width="36" height="36">
+                First Emirates
+            </a>
 
             <div class="header-actions">
                 <button class="header-menu-btn" id="mobileMenuToggle" aria-label="Open menu"
-                    aria-controls="mobileMenuOverlay" aria-expanded="false">
-                    <svg class="icon-open" viewBox="0 0 27 27" fill="none" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M4.05 9.45c0-.745.604-1.35 1.35-1.35h16.2a1.35 1.35 0 1 1 0 2.7H5.4a1.35 1.35 0 0 1-1.35-1.35m0 8.1c0-.745.604-1.35 1.35-1.35h16.2a1.35 1.35 0 1 1 0 2.7H5.4a1.35 1.35 0 0 1-1.35-1.35" clip-rule="evenodd" /></svg>
-                    <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
-                </button>
+                    aria-controls="mobileMenuOverlay" aria-expanded="false"></button>
                 <a href="#contact" class="btn btn-dark btn-lg header-contact">
                     <div class="hover-roll-text" data-text="Contact us"><span>Contact us</span></div>
                 </a>
@@ -3014,7 +3084,7 @@
 
         <div class="container hero-container">
             <div class="hero-content">
-                <div class="hero-row">
+                 <div class="hero-row">
                     <p class="hero-subtitle">Your All in One IT Solution Partner, delivering IT infrastructure,
                         security surveillance, networking and biometric solutions across the UAE.</p>
 
@@ -3589,7 +3659,7 @@
                 <!-- Top / Left-Top -->
                 <div class="card card-body why-image-wrapper">
                     <div class="why-spinning-img">
-                        <img src="./images/why-us-img2.avif" alt="Rotating graphic">
+                        <img src="./images/faq-image.png" alt="Rotating graphic">
                     </div>
                     <div class="why-image-content">
                         <h3 class="why-image-title">Comprehensive Integration</h3>
