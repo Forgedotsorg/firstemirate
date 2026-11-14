@@ -3713,18 +3713,20 @@
             align-items: center;
             gap: 8px;
             font-family: var(--font-display);
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 400;
             letter-spacing: -.01em;
         }
 
-        .at-title b em {
+        .at-title small em {
+            display: inline-block;
+            margin-right: 4px;
             font-family: var(--font-mono);
             font-style: normal;
-            font-size: .6rem;
+            font-size: .58rem;
             font-weight: 500;
             letter-spacing: .1em;
-            padding: 2px 7px;
+            padding: 1px 6px;
             border-radius: var(--radius-full);
             background: rgba(255, 255, 255, .18);
             color: #fff;
@@ -3741,8 +3743,8 @@
             z-index: 1;
             display: grid;
             place-items: center;
-            width: 38px;
-            height: 38px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             background: rgba(255, 255, 255, .12);
             color: #fff;
@@ -3758,6 +3760,23 @@
         .at-x svg {
             width: 16px;
             height: 16px;
+        }
+
+        /* New-chat button (clears the saved history) */
+        .at-new {
+            margin-right: -6px;
+        }
+
+        .at-name {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+
+        .at-new:hover {
+            transform: rotate(-180deg);
         }
 
         .at-body {
@@ -4013,7 +4032,6 @@
 
             .at-title b {
                 font-size: 1rem;
-                white-space: nowrap;
             }
 
             .at-fab {
@@ -5867,9 +5885,10 @@
         <div class="at-head">
             <span class="at-ava"><img src="./images/logo.png" alt="" width="28" height="28"><span class="dot-live"></span></span>
             <div class="at-title">
-                <b>First Emirates Assistant <em>AI</em></b>
-                <small>Online · answers from our company profile</small>
+                <b><span class="at-name">First Emirates Assistant</span></b>
+                <small><em>AI</em> Online · answers from our company profile</small>
             </div>
+            <button class="at-x at-new" id="atNew" type="button" aria-label="Start a new chat" title="Start a new chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7" /><path d="M20 4v7h-7" /></svg></button>
             <button class="at-x" id="atClose" type="button" aria-label="Close chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" /></svg></button>
         </div>
         <div class="at-body" id="atBody" aria-live="polite"></div>
@@ -6223,7 +6242,8 @@
         /* ===================== CHATBOT JS ===================== */
         (function () {
           var WA = "https://wa.me/971555184464?text=" + encodeURIComponent("Hello First Emirates Computers, I'd like to know more about your IT and security solutions.");
-          var AT_AGENT_URL = ""; // set to the First Emirates agent webhook URL (empty = local KB only)
+          // JSON is posted as text/plain so browsers send no CORS preflight (n8n parses it in Validate Input)
+          var AT_AGENT_URL = "https://my-n8n-app.eastus.cloudapp.azure.com/webhook/first-emirates-chat"; // n8n "First Emirates — Website Chatbot" (empty = local KB only)
           var AT_SESSION = "web-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
           /* ===================== CHATBOT KB ===================== */
@@ -6413,18 +6433,39 @@
           var chat = document.getElementById('atChat'), fab = document.getElementById('atFab'),
             body = document.getElementById('atBody'), input = document.getElementById('atIn'),
             send = document.getElementById('atSend'), closeBtn = document.getElementById('atClose'),
-            teaser = document.getElementById('atTeaser'), teaserX = document.getElementById('atTeaserX');
+            teaser = document.getElementById('atTeaser'), teaserX = document.getElementById('atTeaserX'),
+            newBtn = document.getElementById('atNew');
           var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.classList.contains('static');
           var phone = window.matchMedia('(max-width: 640px)');
           var greeted = false, opened = false;
 
-          function now() { try { return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } }
-          function stamp(d) { var t = document.createElement('span'); t.className = 'at-time'; t.textContent = now(); d.appendChild(t); }
+          /* Chat history: the last 8 messages live only in the visitor's browser (localStorage, expires
+             after 24h). They are shown again on reload and sent to the agent as context; n8n stores nothing. */
+          var HIST_KEY = 'feChatHistory', HIST_MAX = 8, HIST_TTL = 24 * 60 * 60 * 1000;
+          function histGet() {
+            try {
+              var s = JSON.parse(localStorage.getItem(HIST_KEY) || 'null');
+              if (!s || !Array.isArray(s.items) || Date.now() - s.saved > HIST_TTL) { localStorage.removeItem(HIST_KEY); return []; }
+              return s.items;
+            } catch (e) { return []; }
+          }
+          function histPush(role, text) {
+            text = String(text || '').trim(); if (!text) return;
+            var items = histGet(); items.push({ role: role, text: text.slice(0, 1500), at: Date.now() });
+            while (items.length > HIST_MAX) items.shift(); // 8 slots: the oldest message drops out
+            try { localStorage.setItem(HIST_KEY, JSON.stringify({ saved: Date.now(), items: items })); } catch (e) { }
+          }
+          function histClear() { try { localStorage.removeItem(HIST_KEY); } catch (e) { } }
+          // KB answers are HTML (<b>, \n); history keeps plain text with **bold**, like the agent's replies
+          function plain(html) { var d = document.createElement('div'); d.innerHTML = String(html).replace(/<br\s*\/?>/gi, '\n').replace(/<b>(.*?)<\/b>/gi, '**$1**'); return d.textContent; }
+
+          function now(ts) { try { return new Date(ts || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } }
+          function stamp(d, ts) { var t = document.createElement('span'); t.className = 'at-time'; t.textContent = now(ts); d.appendChild(t); }
           function scrollDown() { body.scrollTop = body.scrollHeight; }
-          function addUser(t) { var d = document.createElement('div'); d.className = 'at-msg user'; d.textContent = t; stamp(d); body.appendChild(d); scrollDown(); }
-          function addBot(html, instant) {
+          function addUser(t, ts) { var d = document.createElement('div'); d.className = 'at-msg user'; d.textContent = t; stamp(d, ts); body.appendChild(d); scrollDown(); }
+          function addBot(html, instant, ts) {
             var d = document.createElement('div'); d.className = 'at-msg bot'; body.appendChild(d);
-            if (reduced || instant) { d.innerHTML = html; stamp(d); scrollDown(); return Promise.resolve(); }
+            if (reduced || instant) { d.innerHTML = html; stamp(d, ts); scrollDown(); return Promise.resolve(); }
             return new Promise(function (res) {
               var i = 0;
               var iv = setInterval(function () { i += 4; d.innerHTML = html.slice(0, i); scrollDown(); if (i >= html.length) { d.innerHTML = html; stamp(d); scrollDown(); clearInterval(iv); res(); } }, 12);
@@ -6447,23 +6488,38 @@
           }
           function typing() { var t = document.createElement('div'); t.className = 'at-typing'; t.setAttribute('aria-label', 'Assistant is typing'); t.innerHTML = '<i></i><i></i><i></i>'; body.appendChild(t); scrollDown(); return t; }
           function localHit(q) { var hit = null; for (var i = 0; i < KB.length; i++) { if (KB[i].k.test(q)) { hit = KB[i]; break; } } if (hit && hit.human) hit = HUMAN; return hit || FALLBACK; }
-          function showHit(hit) { addBot(hit.t).then(function () { if (hit.act) addActions(); addChips(hit.chips); }); }
+          function showHit(hit) { histPush('assistant', plain(hit.t)); addBot(hit.t).then(function () { if (hit.act) addActions(); addChips(hit.chips); }); }
           function respondLocal(q) { var t = typing(); var delay = reduced ? 60 : 650 + Math.min(q.length * 12, 500); setTimeout(function () { t.remove(); showHit(localHit(q)); }, delay); }
-          function respond(q) {
+          function respond(q, history) {
             if (q === 'human') { var th = typing(); setTimeout(function () { th.remove(); showHit(HUMAN); }, reduced ? 60 : 400); return; }
             if (!AT_AGENT_URL) { respondLocal(q); return; }
             var t = typing(); var ctrl = ('AbortController' in window) ? new AbortController() : null; var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 20000);
-            fetch(AT_AGENT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: q, sessionId: AT_SESSION }), signal: ctrl ? ctrl.signal : undefined })
+            fetch(AT_AGENT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify({ message: q, sessionId: AT_SESSION, history: history || [] }), signal: ctrl ? ctrl.signal : undefined })
               .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
-              .then(function (d) { clearTimeout(timer); var reply = d && (d.reply || d.output || d.text || d.answer); if (!reply) throw new Error('empty'); t.remove(); addBot(atFmt(reply), true).then(function () { addChips([C.services, C.quote, C.human]); }); })
+              .then(function (d) { clearTimeout(timer); var reply = d && (d.reply || d.output || d.text || d.answer); if (!reply) throw new Error('empty'); t.remove(); histPush('assistant', reply); addBot(atFmt(reply), true).then(function () { addChips([C.services, C.quote, C.human]); }); })
               .catch(function () { clearTimeout(timer); t.remove(); showHit(localHit(q)); });
           }
-          function ask(q) { if (/talk to a human/i.test(q)) { addUser(q); respond('human'); return; } addUser(q); respond(q); }
+          function ask(q) {
+            // History sent with this message = everything before it (role + text only)
+            var prior = histGet().map(function (h) { return { role: h.role, text: h.text }; });
+            addUser(q); histPush('user', q);
+            if (/talk to a human/i.test(q)) { respond('human'); return; }
+            respond(q, prior);
+          }
 
           var GREETING = "👋 Hi, I'm the <b>First Emirates Assistant</b>. I can help with our IT, security, networking and communication solutions, products, brands, branches and contacts.\n\nHow can I help you today?";
           function dayLabel() { var d = document.createElement('div'); d.className = 'at-day'; d.textContent = 'Today'; body.appendChild(d); }
           function greet(instant) {
-            if (greeted) return; greeted = true; dayLabel();
+            if (greeted) return; greeted = true;
+            var items = histGet();
+            if (items.length) { // returning visitor: show the saved conversation instead of the greeting
+              var d = document.createElement('div'); d.className = 'at-day'; d.textContent = 'Earlier'; body.appendChild(d);
+              items.forEach(function (h) { if (h.role === 'user') addUser(h.text, h.at); else addBot(atFmt(h.text), true, h.at); });
+              addBot("Welcome back! Ask me anything else, or tap ↻ above to start a new chat.", true);
+              if (!instant) addChips([C.services, C.quote, C.human]);
+              return;
+            }
+            dayLabel();
             if (instant) { addBot(GREETING, true); return; }
             var t = typing();
             setTimeout(function () { t.remove(); addBot(GREETING).then(function () { addChips([C.services, C.cctv, C.net, C.branches, C.human]); }); }, reduced ? 60 : 800);
@@ -6493,6 +6549,10 @@
 
           fab.addEventListener('click', function () { openChat(); });
           closeBtn.addEventListener('click', closeChat);
+          newBtn.addEventListener('click', function () {
+            histClear(); body.innerHTML = ''; greeted = false; greet();
+            if (!phone.matches) input.focus({ preventScroll: true });
+          });
           send.addEventListener('click', sendInput);
           input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); sendInput(); } });
           document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && chat.classList.contains('open')) closeChat(); });
