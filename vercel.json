@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/chat",
+      "destination": "https://my-n8n-app.eastus.cloudapp.azure.com/webhook/first-emirates-chat"
+    }
+  ]
+}

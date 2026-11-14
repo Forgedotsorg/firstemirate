@@ -2,6 +2,7 @@
 !docs/
 !images/
 !index.html
+!vercel.json
 !.gitignore
 
 # macOS folder metadata

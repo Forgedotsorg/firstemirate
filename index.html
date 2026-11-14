@@ -6242,8 +6242,10 @@
         /* ===================== CHATBOT JS ===================== */
         (function () {
           var WA = "https://wa.me/971555184464?text=" + encodeURIComponent("Hello First Emirates Computers, I'd like to know more about your IT and security solutions.");
-          // JSON is posted as text/plain so browsers send no CORS preflight (n8n parses it in Validate Input)
-          var AT_AGENT_URL = "https://my-n8n-app.eastus.cloudapp.azure.com/webhook/first-emirates-chat"; // n8n "First Emirates — Website Chatbot" (empty = local KB only)
+          // Same-origin path that vercel.json forwards to the n8n webhook (n8n "First Emirates — Website Chatbot"),
+          // so the browser makes no cross-site request and CORS never applies. Empty = built-in answers only.
+          // JSON is posted as text/plain; n8n parses it in its Validate Input node.
+          var AT_AGENT_URL = "/api/chat";
           var AT_SESSION = "web-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
           /* ===================== CHATBOT KB ===================== */
