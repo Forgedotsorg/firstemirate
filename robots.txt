@@ -25,6 +25,11 @@ User-agent: YouBot
 User-agent: Timpibot
 Disallow: /
 
+# Scraping services
+User-agent: FirecrawlAgent
+User-agent: Firecrawl
+Disallow: /
+
 # SEO / backlink scrapers
 User-agent: AhrefsBot
 User-agent: SemrushBot
