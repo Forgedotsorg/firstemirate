@@ -21,6 +21,8 @@ const COMMON = new Set('A An The Our We Your You Yes No For From In On Of And Or
 // Reviewed: ordinary words or plurals that the Arabic translates (or writes in singular) on purpose
 ['I', 'AI', 'TV', 'HQ', 'P.O', 'L.L.C', '3rd', 'PBX', 'NVRs', 'DVRs', 'AMCs', 'SSDs', 'PSUs', 'RAM', 'ADF', 'ARABIAN', 'GULF', 'MUSAFFAH', 'AL', 'QUSAIS', 'SZR',
  '16-core', '3-year', '64-channel', 'laser/LED', 'Audio/video'].forEach(w => COMMON.add(w)); // ordinary terms: translated (تقنية المعلومات، الموارد البشرية…)
+// Reviewed per string: a brand-like word used as an ordinary word there ("Zoom in" on the map = تكبير, not Zoom the app)
+const REVIEWED = { 'Zoom in': ['Zoom'], 'Zoom out': ['Zoom'] };
 const KEEP_HINT = /^(?=.*[A-Z0-9])[A-Za-z0-9][A-Za-z0-9.+\-/×]*$/; // looks like a name / code / acronym
 const tokens = en => (en.replace(/<[^>]+>/g, ' ').match(/[A-Za-z0-9][A-Za-z0-9.+\-/]*[A-Za-z0-9+]|[A-Za-z0-9]/g) || [])
   .filter(t => !(/^[A-Za-z]+(-[A-Za-z]+)+$/.test(t) && !/^(Wi-Fi|P-Series|TP-Link|D-Link|All-in-One)$/i.test(t)))
@@ -38,7 +40,7 @@ for (const it of all) {
   if (dbls.length) flags.push('double: ' + dbls.map(x => x.slice(-30)).join(' | '));
   const tl = TRANSLIT.filter(t => ar.includes(t));
   if (tl.length) flags.push('translit: ' + tl.join(', '));
-  const miss = [...new Set(tokens(it.en))].filter(t => !ar.includes(t));
+  const miss = [...new Set(tokens(it.en))].filter(t => !ar.includes(t) && !(REVIEWED[it.en] || []).includes(t));
   if (miss.length) flags.push('missing: ' + miss.join(', '));
   if (flags.length) probs.push({ ...it, flags });
 }

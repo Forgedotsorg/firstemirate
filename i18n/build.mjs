@@ -34,7 +34,7 @@ const mode = process.argv[2] || '';
 
 const TR_ATTRS = new Set(['alt', 'title', 'aria-label', 'placeholder', 'data-text', 'data-ask', 'data-topic']);
 const META_TR = new Set(['description', 'keywords', 'og:title', 'og:description', 'og:image:alt', 'og:site_name', 'twitter:title', 'twitter:description', 'twitter:image:alt', 'author']);
-const PATH_ATTRS = new Set(['src', 'href', 'srcset']);
+const PATH_ATTRS = new Set(['src', 'href', 'srcset', 'data-src']);   // data-src: the street map's data folder
 
 const ENT = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', '#39': "'", hellip: '…', mdash: '—', ndash: '–', middot: '·', rarr: '→', copy: '©', times: '×' };
 const decode = s => s.replace(/&(#x[0-9a-f]+|#\d+|\w+);/gi, (m, e) => {
