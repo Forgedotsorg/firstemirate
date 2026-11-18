@@ -457,7 +457,6 @@
  "Printers & toners": "الطابعات والأحبار",
  "ProLiant Gen11": "ProLiant Gen11",
  "Processor": "المعالج",
- "Product supply, installation, configuration and ongoing AMC support.": "توريد المنتجات وتركيبها وتهيئتها، ودعم AMC مستمر.",
  "Products": "المنتجات",
  "Products & services nationwide": "منتجات وخدمات في جميع أنحاء الدولة",
  "Products / equipment supply": "توريد المنتجات / المعدات",
@@ -537,7 +536,6 @@
  "Structured cabling and integrated office infrastructure, tying your network, CCTV and biometric access control together.": "كابلات هيكلية وبنية تحتية مكتبية متكاملة تربط شبكتك وأنظمة CCTV والتحكم في الدخول بالبصمة معًا.",
  "Structured cabling incl. CAT 5 / CAT 6": "الكابلات الهيكلية بما فيها CAT 5 / CAT 6",
  "Supply": "التوريد",
- "Supply → install → maintain": "توريد ← تركيب ← صيانة",
  "Supply, install & maintain": "توريد وتركيب وصيانة",
  "Supplying and integrating IT and security systems in the UAE": "نورّد أنظمة تقنية المعلومات والأنظمة الأمنية ونُكاملها في الإمارات",
  "Support & AMC": "الدعم وAMC",
@@ -677,8 +675,6 @@
  "Your budget": "ميزانيتك",
  "Best fit": "الأنسب لك",
  "Install": "التركيب",
- "Configure": "الإعداد",
- "AMC support": "دعم AMC",
  "Your setup": "حلولك المختارة",
  "Hi! Can you help with our office CCTV?": "مرحبًا! هل يمكنكم مساعدتنا في نظام CCTV للمكتب؟",
  "Of course, happy to help.": "بالتأكيد، يسعدنا مساعدتك.",
@@ -687,5 +683,9 @@
  "Zoom out": "تصغير",
  "Reset map": "إعادة ضبط الخريطة",
  "© OpenStreetMap contributors": "© مساهمو OpenStreetMap",
- "View on map": "اعرض على الخريطة"
+ "View on map": "اعرض على الخريطة",
+ "Integrate": "التكامل",
+ "Maintain": "الصيانة",
+ "Supply, installation, integration and maintenance, with customized AMCs.": "التوريد والتركيب والتكامل والصيانة، مع عقود AMC مخصصة.",
+ "Supply → install → integrate → maintain": "توريد ← تركيب ← تكامل ← صيانة"
 }
