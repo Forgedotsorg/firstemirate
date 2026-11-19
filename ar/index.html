@@ -8702,12 +8702,16 @@
           var greeted = false, opened = false;
 
           /* Chat history: the last 8 messages live only in the visitor's browser (localStorage, expires
-             after 24h). They are shown again on reload and sent to the agent as context; n8n stores nothing. */
-          var HIST_KEY = 'feChatHistory', HIST_MAX = 8, HIST_TTL = 24 * 60 * 60 * 1000;
+             after 24h). They are shown again on reload and sent to the agent as context; n8n stores nothing.
+             Each page language keeps its own chat (feChatHistory-en / feChatHistory-ar), so the English
+             page never shows the Arabic conversation and vice versa. */
+          var HIST_LANG = document.documentElement.lang === 'ar' ? 'ar' : 'en';
+          var HIST_KEY = 'feChatHistory-' + HIST_LANG, HIST_MAX = 8, HIST_TTL = 24 * 60 * 60 * 1000;
+          try { localStorage.removeItem('feChatHistory'); } catch (e) { } // old shared key (language unknown)
           function histGet() {
             try {
               var s = JSON.parse(localStorage.getItem(HIST_KEY) || 'null');
-              if (!s || !Array.isArray(s.items) || Date.now() - s.saved > HIST_TTL) { localStorage.removeItem(HIST_KEY); return []; }
+              if (!s || !Array.isArray(s.items) || (s.lang && s.lang !== HIST_LANG) || Date.now() - s.saved > HIST_TTL) { localStorage.removeItem(HIST_KEY); return []; }
               return s.items;
             } catch (e) { return []; }
           }
@@ -8715,7 +8719,7 @@
             text = String(text || '').trim(); if (!text) return;
             var items = histGet(); items.push({ role: role, text: text.slice(0, 1500), at: Date.now() });
             while (items.length > HIST_MAX) items.shift(); // 8 slots: the oldest message drops out
-            try { localStorage.setItem(HIST_KEY, JSON.stringify({ saved: Date.now(), items: items })); } catch (e) { }
+            try { localStorage.setItem(HIST_KEY, JSON.stringify({ lang: HIST_LANG, saved: Date.now(), items: items })); } catch (e) { }
           }
           function histClear() { try { localStorage.removeItem(HIST_KEY); } catch (e) { } }
           // KB answers are HTML (<b>, \n); history keeps plain text with **bold**, like the agent's replies
