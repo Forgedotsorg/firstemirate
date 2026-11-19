@@ -2120,7 +2120,7 @@
 
         @media (max-width: 1023.98px) {
             .hero-inner {
-                grid-template-columns: 1fr;
+                grid-template-columns: minmax(0, 1fr); /* never wider than the screen */
                 gap: 0;
             }
 
@@ -2128,7 +2128,9 @@
                 padding-bottom: 0;
             }
 
+            /* height from width only: with stretch + aspect-ratio, Safari could lock the column wider than the screen */
             .hero-stage {
+                align-self: start;
                 min-height: 0;
                 aspect-ratio: 1 / .82;
                 margin-inline: calc(var(--container-gutter) * -1);
