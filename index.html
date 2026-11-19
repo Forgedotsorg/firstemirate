@@ -5583,6 +5583,28 @@
             outline: none;
         }
 
+        /* While a reply is on its way (.is-busy) the input, mic and send are disabled, and older
+           suggestion chips can't be clicked, so only one question is answered at a time. */
+        .at-foot.is-busy {
+            background: var(--color-bg-2);
+        }
+
+        .at-in:disabled {
+            color: var(--color-muted);
+            cursor: not-allowed;
+        }
+
+        .at-send:disabled,
+        .at-mic:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+        }
+
+        .at-chat.is-busy .at-chips .chip {
+            opacity: .5;
+            pointer-events: none;
+        }
+
         .at-send {
             display: grid;
             place-items: center;
@@ -8650,7 +8672,9 @@
           function now(ts) { try { return new Date(ts || Date.now()).toLocaleTimeString(TIME_LOCALE, { hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } }
           function stamp(d, ts) { var t = document.createElement('span'); t.className = 'at-time'; t.textContent = now(ts); d.appendChild(t); }
           function scrollDown() { body.scrollTop = body.scrollHeight; }
-          function addUser(t, ts) { var d = document.createElement('div'); d.className = 'at-msg user'; d.textContent = t; stamp(d, ts); body.appendChild(d); scrollDown(); }
+          // <bdi>: the visitor's text keeps its own direction (an English question on the Arabic page reads
+          // "Do you install CCTV?", not "?Do you install CCTV"); the bubble itself stays where it is.
+          function addUser(t, ts) { var d = document.createElement('div'); d.className = 'at-msg user'; var b = document.createElement('bdi'); b.textContent = t; d.appendChild(b); stamp(d, ts); body.appendChild(d); scrollDown(); }
           function addBot(html, instant, ts) {
             var d = document.createElement('div'); d.className = 'at-msg bot'; body.appendChild(d);
             if (reduced || instant) { d.innerHTML = html; stamp(d, ts); scrollDown(); return Promise.resolve(); }
@@ -8664,7 +8688,7 @@
             var w = document.createElement('div'); w.className = 'at-chips';
             list.forEach(function (c) {
               var b = document.createElement('button'); b.type = 'button'; b.className = 'chip' + ((c === C.quote || /quote/i.test(c)) ? ' is-hot' : ''); b.textContent = c;
-              b.addEventListener('click', function () { w.remove(); ask(c); }); w.appendChild(b);
+              b.addEventListener('click', function () { if (busy) return; w.remove(); ask(c); }); w.appendChild(b);
             });
             body.appendChild(w); scrollDown();
           }
@@ -8692,7 +8716,7 @@
             var asked = String(q).trim().toLowerCase();
             return { chips: (hit.chips || []).filter(function (c) { return c.toLowerCase() !== asked; }), act: !!hit.act };
           }
-          function showHit(hit) { histPush('assistant', plain(hit.t)); addBot(hit.t).then(function () { if (hit.act) addActions(); addChips(hit.chips); }); }
+          function showHit(hit) { histPush('assistant', plain(hit.t)); addBot(hit.t).then(function () { if (hit.act) addActions(); addChips(hit.chips); setBusy(false); }); }
           function respondLocal(q) { var t = typing(); var delay = reduced ? 60 : 650 + Math.min(q.length * 12, 500); setTimeout(function () { t.remove(); showHit(localHit(q)); }, delay); }
           function respond(q, history) {
             if (q === 'human') { var th = typing(); setTimeout(function () { th.remove(); showHit(HUMAN); }, reduced ? 60 : 400); return; }
@@ -8700,14 +8724,29 @@
             var t = typing(); var ctrl = ('AbortController' in window) ? new AbortController() : null; var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 20000);
             fetch(AT_AGENT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify({ message: q, sessionId: AT_SESSION, history: history || [], lang: document.documentElement.lang === 'ar' ? 'ar' : 'en' }), signal: ctrl ? ctrl.signal : undefined })
               .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
-              .then(function (d) { clearTimeout(timer); var reply = d && (d.reply || d.output || d.text || d.answer); if (!reply) throw new Error('empty'); t.remove(); histPush('assistant', reply); var pick = pickFollowUp(q, reply, d); addBot(atFmt(reply), true).then(function () { if (pick.act) addActions(); addChips(pick.chips); }); })
+              .then(function (d) { clearTimeout(timer); var reply = d && (d.reply || d.output || d.text || d.answer); if (!reply) throw new Error('empty'); t.remove(); histPush('assistant', reply); var pick = pickFollowUp(q, reply, d); addBot(atFmt(reply), true).then(function () { if (pick.act) addActions(); addChips(pick.chips); setBusy(false); }); })
               .catch(function () { clearTimeout(timer); t.remove(); showHit(localHit(q)); });
           }
+          /* One question at a time: from sending until the reply (and its chips) is fully shown, the input,
+             mic and send are disabled and nothing else can be asked. A safety timer (the 20s agent wait +
+             the reply animation) always releases it. */
+          var busy = false, busyTimer = 0, phBusy = L('Waiting for the reply…');
+          function setBusy(on) {
+            busy = on; clearTimeout(busyTimer);
+            chat.classList.toggle('is-busy', on); foot.classList.toggle('is-busy', on);
+            var hadFocus = document.activeElement === input;
+            input.disabled = on; send.disabled = on; mic.disabled = on;
+            input.placeholder = on ? phBusy : phDefault;
+            if (on) { busyTimer = setTimeout(function () { setBusy(false); }, 30000); wasFocused = hadFocus; }
+            else if (wasFocused && chat.classList.contains('open') && !phone.matches) input.focus({ preventScroll: true });
+          }
+          var wasFocused = false;
           function ask(q) {
+            if (busy) { flashNote(L('Please wait for the current reply.')); return; }
             voiceStop(true); // sending (typed, spoken, chip or feChat.ask) ends any recording
             // History sent with this message = everything before it (role + text only)
             var prior = histGet().map(function (h) { return { role: h.role, text: h.text }; });
-            addUser(q); histPush('user', q);
+            addUser(q); histPush('user', q); setBusy(true);
             if (q === C.human || /talk to a human/i.test(q)) { respond('human'); return; }
             respond(q, prior);
           }
@@ -8751,7 +8790,7 @@
             chat.classList.remove('open'); fab.classList.remove('hide'); fab.setAttribute('aria-expanded', 'false');
             document.body.classList.remove('at-lock'); fab.focus({ preventScroll: true });
           }
-          function sendInput() { voiceStop(true); var v = input.value.trim(); if (!v) return; input.value = ''; ask(v); }
+          function sendInput() { if (busy) return; voiceStop(true); var v = input.value.trim(); if (!v) return; input.value = ''; ask(v); }
 
           /* Voice input: the browser's own speech recognition (Chrome, Edge, Safari; not Firefox, where the
              mic stays hidden). Words appear in the input while the visitor speaks. Mic again = stop and keep
