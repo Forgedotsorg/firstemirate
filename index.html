@@ -5476,6 +5476,13 @@
             color: var(--color-ink);
         }
 
+        .at-msg.bot a {
+            color: inherit;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            word-break: break-all;
+        }
+
         .at-msg.user {
             align-self: flex-end;
             border-radius: 18px;
@@ -5535,6 +5542,15 @@
 
         .at-typing i:nth-child(3) {
             animation-delay: .36s;
+        }
+
+        /* "Typing… 12 s" / "answering another visitor…" while waiting for the AI answer */
+        .at-typing-label {
+            align-self: center;
+            margin-inline-start: 6px;
+            font-size: .78rem;
+            line-height: 1;
+            color: var(--color-muted);
         }
 
         @keyframes atB {
@@ -8447,16 +8463,30 @@
           // L("…") marks a visitor-facing string; i18n/build.mjs swaps it for the Arabic text on /ar/
           function L(s) { return s; }
           var WA = "https://wa.me/971555184464?text=" + encodeURIComponent(L("Hello First Emirates Computers, I'd like to know more about your IT and security solutions."));
-          // Same-origin path that vercel.json forwards to the n8n webhook (n8n "First Emirates — Website Chatbot"),
-          // so the browser makes no cross-site request and CORS never applies. Empty = built-in answers only.
-          // JSON is posted as text/plain; n8n parses it in its Validate Input node.
-          var AT_AGENT_URL = "/api/chat";
+          // forgeweb AI assistant (answers from the company's knowledge documents in forgeweb).
+          // Called directly (not through a proxy) so forgeweb sees each visitor's own IP for its limits.
+          // forgeweb only answers pages on the domains allowed in forgeweb (Company → Chatbot tab).
+          // The site key is public by design: it only tells forgeweb which website is asking.
+          // Empty URL or key = built-in answers only.
+          var AT_AGENT_URL = "https://forge-web-backend.redsea-4bf9caea.eastus.azurecontainerapps.io/public/chat/stream";
+          var AT_SITE_KEY = "pk_pDN7glVtk2W0w0nWzuiwCQCX";
+          // Give up after this long without hearing anything from forgeweb (it sends a keep-alive every 15s
+          // while the visitor waits in its queue, so a long answer that is still arriving is never cut off)
+          var AT_IDLE_MS = 120000;
           var AT_SESSION = "web-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
           /* ===================== CHATBOT KB ===================== */
           function atFmt(s) {
             s = String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             return s.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+          }
+          // AI answers: atFmt, then web addresses and emails become links (no quotes or tags can get through:
+          // the text is already escaped and the patterns exclude " ' < >)
+          function atFmtReply(s) {
+            return atFmt(s).replace(/(https?:\/\/[^\s<>"']+[^\s<>"'.,;:!?)])|([\w.+-]+@[\w-]+(?:\.[\w-]+)+)/g, function (m, url, mail) {
+              return url ? '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + url + '</a>'
+                : '<a href="mailto:' + mail + '">' + mail + '</a>';
+            });
           }
           // Source: docs/First_Emirates_Computers_Master_Knowledge_Base_FINAL.md
           // Grounding: no invented prices, SLAs, 24/7 claims, certifications, leaders, clients or dealerships.
@@ -8702,7 +8732,7 @@
           }
           function typing() { var t = document.createElement('div'); t.className = 'at-typing'; t.setAttribute('aria-label', L('Assistant is typing')); t.innerHTML = '<i></i><i></i><i></i>'; body.appendChild(t); scrollDown(); return t; }
           function localHit(q) { var hit = null; for (var i = 0; i < KB.length; i++) { if (KB[i].k.test(q)) { hit = KB[i]; break; } } if (hit && hit.human) hit = HUMAN; return hit || FALLBACK; }
-          // Follow-up chips/buttons for an AI (n8n) answer. Optional: if the workflow ever returns a
+          // Follow-up chips/buttons for an AI (forgeweb) answer. Optional: if the answer ever comes with a
           // `suggestions` (or `chips`) array of strings, those are used. Otherwise the visitor's question is
           // matched to a KB topic (then the reply text, if the question was a greeting or unmatched) and that
           // topic's curated chips and contact buttons are shown — so every chip leads to a real answer.
@@ -8720,18 +8750,90 @@
           }
           function showHit(hit) { histPush('assistant', plain(hit.t)); addBot(hit.t).then(function () { if (hit.act) addActions(); addChips(hit.chips); setBusy(false); }); }
           function respondLocal(q) { var t = typing(); var delay = reduced ? 60 : 650 + Math.min(q.length * 12, 500); setTimeout(function () { t.remove(); showHit(localHit(q)); }, delay); }
-          function respond(q, history) {
+          /* AI answer from forgeweb, streamed: the typing dots show "Typing… n s" (or "answering another
+             visitor" while queued), then the answer appears in a bot bubble as it is written. The final text
+             replaces the streamed one (forgeweb may tidy it at the end), then the usual follow-up chips.
+             Any problem (unreachable, busy, limits, timeout) → the built-in answer, so the chat never breaks. */
+          function respond(q) {
             if (q === 'human') { var th = typing(); setTimeout(function () { th.remove(); showHit(HUMAN); }, reduced ? 60 : 400); return; }
-            if (!AT_AGENT_URL) { respondLocal(q); return; }
-            var t = typing(); var ctrl = ('AbortController' in window) ? new AbortController() : null; var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 20000);
-            fetch(AT_AGENT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify({ message: q, sessionId: AT_SESSION, history: history || [], lang: document.documentElement.lang === 'ar' ? 'ar' : 'en' }), signal: ctrl ? ctrl.signal : undefined })
-              .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
-              .then(function (d) { clearTimeout(timer); var reply = d && (d.reply || d.output || d.text || d.answer); if (!reply) throw new Error('empty'); t.remove(); histPush('assistant', reply); var pick = pickFollowUp(q, reply, d); addBot(atFmt(reply), true).then(function () { if (pick.act) addActions(); addChips(pick.chips); setBusy(false); }); })
-              .catch(function () { clearTimeout(timer); t.remove(); showHit(localHit(q)); });
+            if (!AT_AGENT_URL || !AT_SITE_KEY) { respondLocal(q); return; }
+
+            var t = typing(), label = document.createElement('span');
+            label.className = 'at-typing-label'; t.appendChild(label);
+            var started = Date.now(), ahead = 0;
+            function tick() {
+              var n = Math.round((Date.now() - started) / 1000);
+              label.textContent = (ahead > 0 ? L('The assistant is answering another visitor… {n} s') : L('Typing… {n} s')).replace('{n}', n);
+            }
+            tick(); var ticker = setInterval(tick, 1000);
+            function dropTyping() { clearInterval(ticker); if (t.parentNode) t.remove(); }
+
+            var bubble = null, streamed = '', done = false;
+            var ctrl = new AbortController(), idle = 0;
+            function arm() { clearTimeout(idle); idle = setTimeout(function () { ctrl.abort(); }, AT_IDLE_MS); }
+            function end() { done = true; clearTimeout(idle); dropTyping(); if (bubble) bubble.removeAttribute('aria-busy'); }
+
+            function finish(reply) {
+              if (done) return; end();
+              histPush('assistant', reply);
+              var pick = pickFollowUp(q, reply, null);
+              function after() { if (pick.act) addActions(); addChips(pick.chips); setBusy(false); }
+              if (bubble) { bubble.innerHTML = atFmtReply(reply); stamp(bubble); scrollDown(); after(); }
+              else addBot(atFmtReply(reply), true).then(after);
+            }
+            function fallback(status) {
+              if (done) return; end();
+              if (bubble) bubble.remove();
+              if (status === 429) flashNote(L('Too many messages. Please wait a minute and try again.'));
+              else if (status === 503) flashNote(L('The assistant is busy right now, so here is a quick answer.'));
+              showHit(localHit(q));
+            }
+            function onEvent(ev, data) {
+              if (ev === 'queued') { ahead = data.position || 0; tick(); }
+              else if (ev === 'token') {
+                ahead = 0; streamed += data.text || '';
+                if (!bubble) {
+                  dropTyping();
+                  bubble = document.createElement('div'); bubble.className = 'at-msg bot'; bubble.setAttribute('aria-busy', 'true');
+                  body.appendChild(bubble);
+                }
+                bubble.innerHTML = atFmtReply(streamed); scrollDown();
+              }
+              else if (ev === 'done') { if (data.answer || streamed) finish(data.answer || streamed); else fallback(); }
+              else if (ev === 'error') fallback(data.status);
+            }
+
+            arm();
+            fetch(AT_AGENT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ siteKey: AT_SITE_KEY, sessionId: AT_SESSION, message: q }), signal: ctrl.signal })
+              .then(function (r) {
+                // Errors before the answer starts (limits, not allowed…) come back as JSON
+                if (!r.ok || (r.headers.get('Content-Type') || '').indexOf('text/event-stream') === -1) { fallback(r.status); return; }
+                var reader = r.body.getReader(), dec = new TextDecoder(), buf = '';
+                function read() {
+                  return reader.read().then(function (x) {
+                    if (x.done) { if (!done) { if (streamed) finish(streamed); else fallback(); } return; }
+                    arm(); // forgeweb is still there (answer text or keep-alive)
+                    buf += dec.decode(x.value, { stream: true });
+                    var parts = buf.split('\n\n'); buf = parts.pop();
+                    parts.forEach(function (block) {
+                      var ev = 'message', data = '';
+                      block.split('\n').forEach(function (line) {
+                        if (line.indexOf('event:') === 0) ev = line.slice(6).trim();
+                        else if (line.indexOf('data:') === 0) data += line.slice(5).trim();
+                      });
+                      if (!data) return; // keep-alive
+                      try { onEvent(ev, JSON.parse(data)); } catch (e) { /* ignore a malformed event */ }
+                    });
+                    return read();
+                  });
+                }
+                return read();
+              })
+              .catch(function () { fallback(); });
           }
           /* One question at a time: from sending until the reply (and its chips) is fully shown, the input,
-             mic and send are disabled and nothing else can be asked. A safety timer (the 20s agent wait +
-             the reply animation) always releases it. */
+             mic and send are disabled and nothing else can be asked. A safety timer always releases it; it is
+             longer than forgeweb's longest wait (queue + a CPU answer), so it never cuts a real answer off. */
           var busy = false, busyTimer = 0, phBusy = L('Waiting for the reply…');
           function setBusy(on) {
             busy = on; clearTimeout(busyTimer);
@@ -8739,18 +8841,16 @@
             var hadFocus = document.activeElement === input;
             input.disabled = on; send.disabled = on; mic.disabled = on;
             input.placeholder = on ? phBusy : phDefault;
-            if (on) { busyTimer = setTimeout(function () { setBusy(false); }, 30000); wasFocused = hadFocus; }
+            if (on) { busyTimer = setTimeout(function () { setBusy(false); }, 300000); wasFocused = hadFocus; }
             else if (wasFocused && chat.classList.contains('open') && !phone.matches) input.focus({ preventScroll: true });
           }
           var wasFocused = false;
           function ask(q) {
             if (busy) { flashNote(L('Please wait for the current reply.')); return; }
             voiceStop(true); // sending (typed, spoken, chip or feChat.ask) ends any recording
-            // History sent with this message = everything before it (role + text only)
-            var prior = histGet().map(function (h) { return { role: h.role, text: h.text }; });
             addUser(q); histPush('user', q); setBusy(true);
             if (q === C.human || /talk to a human/i.test(q)) { respond('human'); return; }
-            respond(q, prior);
+            respond(q);
           }
 
           var GREETING = L("👋 Hi, I'm the <b>First Emirates Assistant</b>. I can help with our IT, security, networking and communication solutions, products, brands, branches and contacts.\n\nHow can I help you today?");
