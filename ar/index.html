@@ -8594,7 +8594,8 @@
             {
               k: /\b(price|prices|pricing|cost|costs|quote|quotes|quotation|how much|rates?|budget|offer letter)\b|سعر|أسعار|الأسعار|تكلفة|التكلفة|كم يكلف|عرض سعر|ميزانية/i,
               t: L("الأسعار التفصيلية غير مدرجة في ملف شركتنا — فكل حل يُصمَّم وفق متطلباتك و<b>ميزانيتك<\/b>.\n\nشاركنا ما تحتاجه وسيُعدّ فريق المبيعات عرض سعر لك:"),
-              act: true, chips: [C.services, C.contact]
+              act: true, chips: [C.services, C.contact],
+              local: true // always this built-in answer (instant): prices and quotes go to the sales team
             },
             {
               k: /(\bamc\b|annual maintenance|maintenance contract|support contract|service contract|عقد الصيانة|عقود الصيانة|عقد صيانة|الصيانة السنوية|صيانة سنوية)/i,
@@ -8861,10 +8862,11 @@
               if (bubble) { bubble.innerHTML = atFmtReply(reply); stamp(bubble); scrollDown(); after(); }
               else addBot(atFmtReply(reply), true).then(after);
             }
-            function fallback(status) {
+            function fallback(status, message) {
               if (done) return; end();
               if (bubble) bubble.remove();
-              if (status === 429) flashNote(L("رسائل كثيرة. يُرجى الانتظار دقيقة ثم المحاولة مرة أخرى."));
+              if (status === 429 && /today/i.test(message || '')) flashNote(L("وصل المساعد إلى حدّه اليومي، لذا إليك إجابة سريعة."));
+              else if (status === 429) flashNote(L("رسائل كثيرة. يُرجى الانتظار دقيقة ثم المحاولة مرة أخرى."));
               else if (status === 503) flashNote(L("المساعد مشغول الآن، لذا إليك إجابة سريعة."));
               showHit(localHit(q));
             }
@@ -8880,14 +8882,16 @@
                 bubble.innerHTML = atFmtReply(streamed); scrollDown();
               }
               else if (ev === 'done') { if (data.answer || streamed) finish(data.answer || streamed); else fallback(); }
-              else if (ev === 'error') fallback(data.status);
+              else if (ev === 'error') fallback(data.status, data.message);
             }
 
             arm();
             fetch(AT_AGENT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ siteKey: AT_SITE_KEY, sessionId: AT_SESSION, message: q }), signal: ctrl.signal })
               .then(function (r) {
                 // Errors before the answer starts (limits, not allowed…) come back as JSON
-                if (!r.ok || (r.headers.get('Content-Type') || '').indexOf('text/event-stream') === -1) { fallback(r.status); return; }
+                if (!r.ok || (r.headers.get('Content-Type') || '').indexOf('text/event-stream') === -1) {
+                  return r.json().catch(function () { return {}; }).then(function (d) { fallback(r.status, d && d.message); });
+                }
                 var reader = r.body.getReader(), dec = new TextDecoder(), buf = '';
                 function read() {
                   return reader.read().then(function (x) {
@@ -8930,6 +8934,7 @@
             voiceStop(true); // sending (typed, spoken, chip or feChat.ask) ends any recording
             addUser(q); histPush('user', q); setBusy(true);
             if (q === C.human || /talk to a human/i.test(q)) { respond('human'); return; }
+            if (localHit(q).local) { respondLocal(q); return; } // e.g. "Request a quote", prices
             respond(q);
           }
 
