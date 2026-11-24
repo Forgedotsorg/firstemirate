@@ -8677,7 +8677,7 @@
           var greeted = false, opened = false;
 
           /* Chat history: the last 8 messages live only in the visitor's browser (localStorage, expires
-             after 24h). They are shown again on reload and sent to the agent as context; n8n stores nothing.
+             after 24h). They are shown again on reload only; they are never sent to forgeweb (it gets just the new question).
              Each page language keeps its own chat (feChatHistory-en / feChatHistory-ar), so the English
              page never shows the Arabic conversation and vice versa. */
           var HIST_LANG = document.documentElement.lang === 'ar' ? 'ar' : 'en';
